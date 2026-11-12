@@ -5,6 +5,7 @@ import { PLANTILLAS, crearDesdePlantilla, recetaVacia } from '../lib/plantillas.
 import EditorReceta from './EditorReceta.jsx';
 import MisRecetas from './MisRecetas.jsx';
 import Despensa from './Despensa.jsx';
+import ListaPrecios from './ListaPrecios.jsx';
 
 const CAMPOS_QUE_ACTUALIZAN_PRECIO = ['price', 'pack', 'unit'];
 
@@ -84,6 +85,7 @@ export default function Calculadora() {
       ...prev,
       recetas: prev.recetas.filter((r) => r.id !== id),
       recetaActiva: prev.recetaActiva === id ? null : prev.recetaActiva,
+      lista: { ...prev.lista, items: prev.lista.items.filter((i) => i.recetaId !== id) },
     })),
     cambiarReceta,
     cambiarNegocio: (campo, valor) => setEstado((prev) => ({ ...prev, negocio: { ...prev.negocio, [campo]: valor } })),
@@ -117,6 +119,8 @@ export default function Calculadora() {
       insumos: prev.insumos.filter((i) => i.id !== id),
       recetas: prev.recetas.map((r) => ({ ...r, lines: r.lines.filter((l) => l.insumoId !== id) })),
     })),
+    cambiarLista: (campo, valor) => setEstado((prev) => ({ ...prev, lista: { ...prev.lista, [campo]: valor } })),
+    reemplazarEstado: (nuevo) => { setEstado(nuevo); setVista('recetas'); },
   };
 
   const usosPorInsumo = {};
@@ -126,6 +130,7 @@ export default function Calculadora() {
     { clave: 'editor', etiqueta: 'Receta', deshabilitada: !receta },
     { clave: 'recetas', etiqueta: 'Mis recetas' },
     { clave: 'despensa', etiqueta: 'Despensa' },
+    { clave: 'lista', etiqueta: 'Lista' },
   ];
 
   return (
@@ -160,6 +165,9 @@ export default function Calculadora() {
       )}
       {vista === 'despensa' && (
         <Despensa estado={estado} usosPorInsumo={usosPorInsumo} acciones={acciones} />
+      )}
+      {vista === 'lista' && (
+        <ListaPrecios estado={estado} insumosPorId={insumosPorId} acciones={acciones} />
       )}
 
       <p className="pc-pie">

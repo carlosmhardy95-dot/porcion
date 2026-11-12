@@ -2,8 +2,8 @@
 .pc-app { max-width: 520px; display: flex; flex-direction: column; gap: 8px; font-size: 16px; }
 .pc-cargando { padding: 24px 0; color: var(--suave); }
 
-.pc-pestanas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: var(--carta); border: 1px solid var(--harina); border-radius: 14px; position: sticky; top: 8px; z-index: 5; }
-.pc-pestana { min-height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--tinta); font: 700 15px var(--sans); cursor: pointer; }
+.pc-pestanas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 6px; background: var(--carta); border: 1px solid var(--harina); border-radius: 14px; position: sticky; top: 8px; z-index: 5; }
+.pc-pestana { min-height: 44px; padding: 0 4px; border: 0; border-radius: 10px; background: transparent; color: var(--tinta); font: 700 14px var(--sans); cursor: pointer; }
 .pc-pestana[aria-current="page"] { background: var(--tinta); color: var(--papel); }
 .pc-pestana:disabled { color: var(--linea); cursor: default; }
 
@@ -99,3 +99,19 @@
 .pc-vacio { color: var(--suave); }
 
 .pc-pie { margin-top: 24px; font-size: 13px; color: var(--suave); }
+
+/* Lista de precios */
+.pc-pastilla[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
+.pc-app input.pc-texto { font-family: var(--sans); }
+.pc-producto { display: flex; flex-direction: column; gap: 10px; }
+.pc-producto-fila { display: flex; align-items: center; gap: 12px; }
+.pc-app input.pc-check { width: 24px; height: 24px; padding: 0; flex: none; accent-color: var(--pimenton); cursor: pointer; }
+.pc-app label.pc-producto-nombre { flex: 1; min-width: 0; font: 700 16px var(--sans); color: var(--tinta); cursor: pointer; }
+.pc-lienzo { display: block; width: 100%; max-width: 320px; height: auto; aspect-ratio: 9 / 16; margin: 0 auto; border: 1px solid var(--harina); border-radius: 12px; box-shadow: 0 6px 20px rgba(31, 27, 22, 0.12); }
+.pc-acciones-columna { display: flex; flex-direction: column; gap: 8px; }
+.pc-boton:disabled, .pc-boton-secundario:disabled { opacity: 0.45; cursor: default; }
+.pc-enlace-boton { display: flex; align-items: center; justify-content: center; text-decoration: none; }
+.pc-deshabilitado { opacity: 0.45; pointer-events: none; }
+.pc-texto-whatsapp { margin: 0; padding: 14px; background: var(--carta); border: 1px dashed var(--linea); border-radius: 12px; font: 400 14px/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.pc-aviso-flotante { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); max-width: calc(100% - 32px); padding: 12px 18px; background: var(--tinta); color: var(--papel); border-radius: 12px; font: 700 15px var(--sans); z-index: 20; }
+.pc-copia { padding-top: 20px; border-top: 1px dashed var(--linea); }

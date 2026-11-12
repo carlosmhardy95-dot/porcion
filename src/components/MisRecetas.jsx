@@ -1,5 +1,6 @@
 import { calcularReceta, dinero } from '../lib/calculo.js';
 import { PLANTILLAS } from '../lib/plantillas.js';
+import CopiaSeguridad from './CopiaSeguridad.jsx';
 
 export default function MisRecetas({ estado, insumosPorId, acciones }) {
   const recetas = [...estado.recetas].sort((a, b) => String(b.actualizada).localeCompare(String(a.actualizada)));
@@ -48,6 +49,8 @@ export default function MisRecetas({ estado, insumosPorId, acciones }) {
           );
         })}
       </section>
+
+      <CopiaSeguridad estado={estado} acciones={acciones} />
     </div>
   );
 }
