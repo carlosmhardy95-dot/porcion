@@ -4,6 +4,23 @@
    con que se marcan cajones y bolsas de insumos. Se divide con espacio (cortes),
    no con líneas; los números mandan.
    ========================================================================== */
+/* Tipografías propias (servidas desde este mismo sitio, sin conectarse a Google).
+   Licencia SIL Open Font License 1.1: ver /fuentes/LICENCIA-*.txt */
+@font-face {
+  font-family: 'Chivo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fuentes/chivo.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Rosario';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fuentes/rosario.woff2') format('woff2');
+}
+
 :root {
   /* Paleta */
   --carbon: #292629;        /* texto, estructura y bloques de resultado */

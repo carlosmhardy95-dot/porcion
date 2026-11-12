@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { aCopia, desdeCopia } from '../lib/almacen.js';
+import { aCopia, desdeCopia, TAMANO_MAXIMO_COPIA } from '../lib/almacen.js';
 
 export default function CopiaSeguridad({ estado, acciones }) {
   const archivoRef = useRef(null);
@@ -22,6 +22,10 @@ export default function CopiaSeguridad({ estado, acciones }) {
     const archivo = evento.target.files?.[0];
     evento.target.value = '';
     if (!archivo) return;
+    if (archivo.size > TAMANO_MAXIMO_COPIA) {
+      setMensaje('El archivo es demasiado grande para ser una copia de Porción.');
+      return;
+    }
     try {
       const datos = desdeCopia(await archivo.text());
       const pregunta = `La copia tiene ${datos.recetas.length} recetas y ${datos.insumos.length} insumos. Va a reemplazar todo lo que tenés ahora. ¿Seguís?`;

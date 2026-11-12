@@ -1,5 +1,9 @@
 // Guardado local de Porción: todo vive en el navegador de cada persona.
+import { sanearEstado } from './validar.js';
+
 const CLAVE = 'porcion-v1';
+const CLAVE_RESPALDO = 'porcion-v1-respaldo';
+export const TAMANO_MAXIMO_COPIA = 5 * 1024 * 1024; // 5 MB
 
 export function negocioInicial() {
   return { valorHora: '4000', costoMin: '30', fijosMes: '120000', unidadesMes: '600' };
@@ -13,26 +17,23 @@ export function estadoInicial() {
   return { version: 1, negocio: negocioInicial(), insumos: [], recetas: [], recetaActiva: null, lista: listaInicial() };
 }
 
-function completar(datos) {
-  return {
-    ...estadoInicial(),
-    ...datos,
-    negocio: { ...negocioInicial(), ...datos.negocio },
-    lista: { ...listaInicial(), ...datos.lista },
-  };
-}
-
-function esValido(datos) {
-  return !!datos && datos.version === 1 && Array.isArray(datos.insumos) && Array.isArray(datos.recetas);
+// Si lo guardado está dañado, no se pisa: se guarda aparte para no perderlo.
+function respaldar(crudo) {
+  try {
+    if (crudo && !localStorage.getItem(CLAVE_RESPALDO)) localStorage.setItem(CLAVE_RESPALDO, crudo);
+  } catch {
+    // Sin espacio o sin acceso: no hay nada más que hacer.
+  }
 }
 
 export function cargar() {
+  let crudo = null;
   try {
-    const crudo = localStorage.getItem(CLAVE);
+    crudo = localStorage.getItem(CLAVE);
     if (!crudo) return estadoInicial();
-    const datos = JSON.parse(crudo);
-    return esValido(datos) ? completar(datos) : estadoInicial();
+    return sanearEstado(JSON.parse(crudo), estadoInicial());
   } catch {
+    respaldar(crudo);
     return estadoInicial();
   }
 }
@@ -63,13 +64,21 @@ export function aCopia(estado) {
 }
 
 export function desdeCopia(texto) {
+  if (typeof texto !== 'string' || texto.length > TAMANO_MAXIMO_COPIA) {
+    throw new Error('El archivo no es una copia de Porción o es demasiado grande.');
+  }
   let contenido;
   try {
     contenido = JSON.parse(texto);
   } catch {
     throw new Error('El archivo no es una copia de Porción.');
   }
-  const datos = contenido?.app === 'porcion' ? contenido.datos : null;
-  if (!esValido(datos)) throw new Error('El archivo no es una copia de Porción o está dañado.');
-  return completar(datos);
+  if (contenido === null || typeof contenido !== 'object' || contenido.app !== 'porcion') {
+    throw new Error('El archivo no es una copia de Porción o está dañado.');
+  }
+  try {
+    return sanearEstado(contenido.datos, estadoInicial());
+  } catch {
+    throw new Error('El archivo no es una copia de Porción o está dañado.');
+  }
 }

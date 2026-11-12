@@ -5,7 +5,6 @@
 const VERSION = '__VERSION__';
 const ARCHIVOS = __ARCHIVOS__;
 const CACHE = `porcion-${VERSION}`;
-const CACHE_FUENTES = 'porcion-fuentes';
 const ESPERA_RED = 4000;
 
 // Al instalar: guarda todas las páginas y archivos del sitio para usarlos sin internet.
@@ -22,7 +21,7 @@ self.addEventListener('activate', (evento) => {
   evento.waitUntil((async () => {
     const claves = await caches.keys();
     await Promise.all(claves
-      .filter((c) => c.startsWith('porcion-') && c !== CACHE && c !== CACHE_FUENTES)
+      .filter((c) => c.startsWith('porcion-') && c !== CACHE)
       .map((c) => caches.delete(c)));
     await self.clients.claim();
   })());
@@ -36,9 +35,6 @@ self.addEventListener('fetch', (evento) => {
   if (url.origin === self.location.origin) {
     evento.respondWith(request.mode === 'navigate' ? pagina(request) : archivo(request));
     return;
-  }
-  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
-    evento.respondWith(fuente(evento));
   }
 });
 
@@ -71,22 +67,4 @@ async function archivo(request) {
     cache.put(request, respuesta.clone());
   }
   return respuesta;
-}
-
-// Tipografías de Google: usa la guardada y la actualiza por detrás.
-async function fuente(evento) {
-  const { request } = evento;
-  const cache = await caches.open(CACHE_FUENTES);
-  const guardada = await cache.match(request);
-  const red = fetch(request)
-    .then((r) => {
-      if (r.ok || r.type === 'opaque') cache.put(request, r.clone());
-      return r;
-    })
-    .catch(() => null);
-  if (guardada) {
-    evento.waitUntil(red);
-    return guardada;
-  }
-  return (await red) ?? Response.error();
 }

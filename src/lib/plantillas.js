@@ -78,7 +78,7 @@ export function recetaVacia() {
 // Crea una receta desde una plantilla. Si un ingrediente ya existe en la despensa
 // (mismo nombre), lo reutiliza sin pisar su precio.
 export function crearDesdePlantilla(clave, estado) {
-  const plantilla = PLANTILLAS[clave];
+  const plantilla = Object.hasOwn(PLANTILLAS, clave) ? PLANTILLAS[clave] : null;
   if (!plantilla) return { estado, recetaId: null };
   const ahora = new Date().toISOString();
   const insumos = [...estado.insumos];

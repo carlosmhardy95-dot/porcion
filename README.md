@@ -61,3 +61,16 @@ Las variaciones tonales, cada una justificada por contraste, están en `src/styl
 - Se divide con espacio (cortes), no con líneas.
 - Sin etiquetas decorativas ni numeraciones de adorno.
 - Los números son lo más grande de cada bloque.
+
+## Seguridad
+
+- **Cabeceras:** `seguridad/cabeceras.mjs` las agrega a `dist/_headers` al compilar.
+  - CSP estricta: solo scripts del propio sitio y los scripts en línea con huella SHA-256 calculada en cada build.
+  - Contra que la página se muestre dentro de otro sitio: `frame-ancestors 'none'` y `X-Frame-Options: DENY`.
+  - También: `nosniff`, `Referrer-Policy`, `Permissions-Policy`, COOP/CORP y HSTS.
+- **Sin terceros:** las tipografías se sirven desde `public/fuentes/` (licencia OFL incluida).
+- **Datos:** `src/lib/validar.js` limpia todo lo que se lee del navegador y de las copias de seguridad.
+  - Controla tipos, largos máximos y cantidades máximas.
+  - Descarta ids inválidos o repetidos.
+  - Si lo guardado está dañado, se conserva en `porcion-v1-respaldo` en lugar de perderse.
+- **Pruebas:** `tests/seguridad.test.js`.

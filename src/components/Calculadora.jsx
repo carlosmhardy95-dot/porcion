@@ -19,7 +19,7 @@ export default function Calculadora() {
   useEffect(() => {
     let inicial = cargar();
     const ejemplo = new URLSearchParams(window.location.search).get('ejemplo');
-    if (ejemplo && PLANTILLAS[ejemplo]) {
+    if (ejemplo && Object.hasOwn(PLANTILLAS, ejemplo)) {
       inicial = crearDesdePlantilla(ejemplo, inicial).estado;
       window.history.replaceState(null, '', window.location.pathname);
       setVista('editor');

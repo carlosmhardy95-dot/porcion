@@ -42,7 +42,7 @@ const datos = [
 ];
 ---
 <Base title={title} description={description}>
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(datos)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(datos).replace(/</g, '\\u003c')} />
   <article class="contenedor articulo">
     <nav aria-label="Ubicación">
       <ol class="migas">
