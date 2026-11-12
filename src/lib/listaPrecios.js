@@ -1,9 +1,10 @@
 // Arma los datos de la lista de precios y la dibuja como imagen para historias (1080 × 1920).
 import { calcularReceta, dinero } from './calculo.js';
+import { LOGOTIPO } from './logotipo.js';
 
 export const TEMAS = {
-  papel: { fondo: '#F6F1E7', tinta: '#1F1B16', suave: '#6B6257', linea: '#B9AE99', acento: '#C2412D' },
-  tinta: { fondo: '#1F1B16', tinta: '#F6F1E7', suave: '#CFC6B4', linea: '#6B6257', acento: '#E8B64C' },
+  papel: { fondo: '#F3EBDD', tinta: '#33252D', suave: '#65565D', linea: '#8A7C80', acento: '#934653' },
+  tinta: { fondo: '#33252D', tinta: '#F3EBDD', suave: '#D9D0C2', linea: '#8A7C80', acento: '#D8A64E' },
 };
 
 export function etiquetaTanda(rinde) {
@@ -83,11 +84,26 @@ function lineaPunteada(ctx, x1, x2, y, color) {
 
 const FUENTES = [
   '600 120px Fraunces',
-  '700 48px "Atkinson Hyperlegible"',
-  '400 36px "Atkinson Hyperlegible"',
-  '600 48px "IBM Plex Mono"',
-  '500 34px "IBM Plex Mono"',
+  '600 48px "DM Sans"',
+  '400 36px "DM Sans"',
+  '500 48px "DM Mono"',
+  '400 34px "DM Mono"',
 ];
+const SANS = '"DM Sans", system-ui, sans-serif';
+const MONO = '"DM Mono", ui-monospace, monospace';
+
+function dibujarLogotipo(ctx, x, y, alto, color, acento) {
+  if (typeof Path2D === 'undefined') return;
+  const escala = alto / LOGOTIPO.alto;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(escala, escala);
+  ctx.fillStyle = color;
+  ctx.fill(new Path2D(LOGOTIPO.cuerpo));
+  ctx.fillStyle = acento;
+  ctx.fill(new Path2D(LOGOTIPO.acento));
+  ctx.restore();
+}
 
 export async function dibujarLista(canvas, lista, items) {
   const W = 1080;
@@ -109,15 +125,20 @@ export async function dibujarLista(canvas, lista, items) {
   ctx.fillRect(0, 0, W, H);
   ctx.textBaseline = 'alphabetic';
 
-  let y = 150;
+  // Porción geométrica: cuarto de círculo en la esquina.
   ctx.fillStyle = t.acento;
-  ctx.fillRect(X, y, 96, 10);
-  y += 70;
+  ctx.beginPath();
+  ctx.moveTo(W, 0);
+  ctx.arc(W, 0, 150, Math.PI / 2, Math.PI);
+  ctx.closePath();
+  ctx.fill();
+
+  let y = 200;
 
   if (lista.negocio) {
     ctx.fillStyle = t.tinta;
-    ctx.font = '500 34px "IBM Plex Mono", monospace';
-    ctx.fillText(recortar(ctx, lista.negocio.toUpperCase(), ANCHO), X, y);
+    ctx.font = `400 34px ${MONO}`;
+    ctx.fillText(recortar(ctx, lista.negocio.toUpperCase(), ANCHO - 120), X, y);
     y += 30;
   }
 
@@ -136,8 +157,8 @@ export async function dibujarLista(canvas, lista, items) {
 
   y += 90;
   ctx.fillStyle = t.suave;
-  ctx.font = '400 40px "Atkinson Hyperlegible", system-ui, sans-serif';
-  ctx.fillText(fechaLista(), X, y);
+  ctx.font = `400 34px ${MONO}`;
+  ctx.fillText(fechaLista().toUpperCase(), X, y);
 
   y += 60;
   lineaPunteada(ctx, X, X + ANCHO, y, t.linea);
@@ -151,7 +172,7 @@ export async function dibujarLista(canvas, lista, items) {
 
   items.forEach((item) => {
     const base = fila + 62 * s;
-    ctx.font = `600 ${Math.round(52 * s)}px "IBM Plex Mono", monospace`;
+    ctx.font = `500 ${Math.round(54 * s)}px ${MONO}`;
     const textoPrecio = dinero(item.precio);
     const anchoPrecio = ctx.measureText(textoPrecio).width;
     ctx.fillStyle = t.tinta;
@@ -161,10 +182,10 @@ export async function dibujarLista(canvas, lista, items) {
 
     const anchoNombre = ANCHO - anchoPrecio - 80;
     let tamNombre = 48 * s;
-    ctx.font = `700 ${Math.round(tamNombre)}px "Atkinson Hyperlegible", system-ui, sans-serif`;
+    ctx.font = `600 ${Math.round(tamNombre)}px ${SANS}`;
     while (ctx.measureText(item.nombre).width > anchoNombre && tamNombre > 36 * s) {
       tamNombre -= 2;
-      ctx.font = `700 ${Math.round(tamNombre)}px "Atkinson Hyperlegible", system-ui, sans-serif`;
+      ctx.font = `600 ${Math.round(tamNombre)}px ${SANS}`;
     }
     const nombre = recortar(ctx, item.nombre, anchoNombre);
     ctx.fillText(nombre, X, base);
@@ -179,24 +200,25 @@ export async function dibujarLista(canvas, lista, items) {
     }
 
     ctx.fillStyle = t.suave;
-    ctx.font = `400 ${Math.round(36 * s)}px "Atkinson Hyperlegible", system-ui, sans-serif`;
+    ctx.font = `400 ${Math.round(34 * s)}px ${SANS}`;
     ctx.fillText(item.detalle, X, base + 48 * s);
     fila += alto;
   });
 
   if (items.length === 0) {
     ctx.fillStyle = t.suave;
-    ctx.font = '400 40px "Atkinson Hyperlegible", system-ui, sans-serif';
+    ctx.font = `400 40px ${SANS}`;
     ctx.fillText('Elegí productos para tu lista.', X, fila + 60);
   }
 
   lineaPunteada(ctx, X, X + ANCHO, pieArriba, t.linea);
   if (lista.contacto) {
     ctx.fillStyle = t.tinta;
-    ctx.font = '700 44px "Atkinson Hyperlegible", system-ui, sans-serif';
+    ctx.font = `600 44px ${SANS}`;
     envolver(ctx, lista.contacto, ANCHO, 2).forEach((l, i) => ctx.fillText(l, X, pieArriba + 90 + i * 56));
   }
   ctx.fillStyle = t.suave;
-  ctx.font = '400 30px "Atkinson Hyperlegible", system-ui, sans-serif';
-  ctx.fillText('Hecha con Porción', X, H - 100);
+  ctx.font = `400 28px ${MONO}`;
+  ctx.fillText('HECHA CON', X, H - 108);
+  dibujarLogotipo(ctx, X + ctx.measureText("HECHA CON").width + 18, H - 147, 46, t.suave, t.acento);
 }

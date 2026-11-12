@@ -1,0 +1,24 @@
+---
+// Logotipo de porción. El cuerpo toma el color del texto (currentColor)
+// y la porción del acento usa --logo-acento (guinda; yema sobre fondos oscuros).
+import { LOGOTIPO } from '../lib/logotipo.js';
+
+const { alto = 28, etiqueta = 'porción', clase = '' } = Astro.props;
+const ancho = Math.round((LOGOTIPO.ancho / LOGOTIPO.alto) * alto);
+---
+<svg
+  class:list={['logotipo', clase]}
+  viewBox={`0 0 ${LOGOTIPO.ancho} ${LOGOTIPO.alto}`}
+  width={ancho}
+  height={alto}
+  role="img"
+  aria-label={etiqueta}
+>
+  <path fill="currentColor" d={LOGOTIPO.cuerpo} />
+  <path class="logotipo-acento" d={LOGOTIPO.acento} />
+</svg>
+
+<style>
+  .logotipo { display: block; flex: none; }
+  .logotipo-acento { fill: var(--logo-acento, #934653); }
+</style>

@@ -27,7 +27,7 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
 
   return (
     <div className="pc-editor">
-      <section className="pc-seccion">
+      <section className="pc-seccion pc-seccion-producto">
         <div className="pc-campo">
           <label htmlFor="pc-nombre" className="pc-volanta">Producto</label>
           <input
@@ -188,19 +188,41 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
         <p className="pc-chico">Si vendés por una app de delivery, sumá su comisión en impuestos y comisiones.</p>
       </section>
 
-      <section className="pc-seccion">
-        <div className="pc-ticket" role="region" aria-label="Resultado" aria-live="polite">
-          <p className="pc-ticket-titulo">TU TICKET DE COSTOS</p>
-          <div className="pc-linea"><span>Te cuesta cada uno</span><span className="pc-numero">{dinero(r.C)}</span></div>
-          <div className="pc-precio">
-            <strong>Precio sugerido por unidad</strong>
-            <span className="pc-grande">{r.invalido ? '—' : dinero(r.precio)}</span>
-            {!r.invalido && r.R > 1 && <span className="pc-chico-tinta">Tanda de {cantidad(r.R)} unidades: {dinero(r.precio * r.R)}</span>}
+      <section className="pc-seccion pc-seccion-resultado" aria-labelledby="pc-resultado-titulo">
+        <h2 id="pc-resultado-titulo">Resultado</h2>
+        <div className="pc-ticket" role="region" aria-label="Resultado de la receta" aria-live="polite">
+          <div className="pc-ticket-titulo">
+            <span>Ficha de costos</span>
+            <span>{r.R > 1 ? `Tanda de ${cantidad(r.R)} u.` : '1 unidad'}</span>
           </div>
-          <div className="pc-linea"><span>Ganás por unidad</span><span className="pc-numero pc-verde">{r.invalido ? '—' : dinero(r.ganancia)}</span></div>
+          <div className="pc-precio">
+            <span className="pc-precio-etiqueta">Precio de venta sugerido</span>
+            <span className="pc-grande">{r.invalido ? '—' : dinero(r.precio)}</span>
+            <span className="pc-chico-tinta">
+              por unidad{!r.invalido && r.R > 1 ? ` · la tanda: ${dinero(r.precio * r.R)}` : ''}
+            </span>
+          </div>
+          <dl className="pc-cifras">
+            <div className="pc-cifra">
+              <dt>Costo por unidad</dt>
+              <dd className="pc-numero">{dinero(r.C)}</dd>
+            </div>
+            <div className="pc-cifra">
+              <dt>Costo total de producción</dt>
+              <dd className="pc-numero">{dinero(r.C * r.R)}</dd>
+            </div>
+            <div className="pc-cifra">
+              <dt>Ganancia real por unidad</dt>
+              <dd className={`pc-numero ${!r.invalido && r.ganancia >= 0 ? 'pc-verde' : ''}`}>{r.invalido ? '—' : dinero(r.ganancia)}</dd>
+            </div>
+            <div className="pc-cifra">
+              <dt>Margen de ganancia</dt>
+              <dd className="pc-numero">{r.invalido || r.precio <= 0 ? '—' : `${(Math.round((r.ganancia / r.precio) * 1000) / 10).toLocaleString('es-AR')} %`}</dd>
+            </div>
+          </dl>
           {r.invalido && <p className="pc-mensaje pc-mal">La ganancia más los impuestos tienen que sumar menos de 95 %.</p>}
           <div className="pc-desglose">
-            <p className="pc-negrita">Qué pesa más en tu costo</p>
+            <p className="pc-desglose-titulo">Qué pesa más en tu costo</p>
             {r.partes.map((p, i) => (
               <div key={p.clave} className="pc-parte">
                 <div className="pc-parte-fila"><span>{p.etiqueta}</span><span className="pc-mono">{dinero(p.valor)} · {Math.round(p.porcentaje)} %</span></div>

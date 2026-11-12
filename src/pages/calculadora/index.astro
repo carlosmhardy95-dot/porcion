@@ -8,25 +8,35 @@ import Calculadora from '../../components/Calculadora.jsx';
 >
   <div class="contenedor pagina">
     <header class="intro">
+      <p class="anotacion"><span>→</span>Calculadora</p>
       <h1>Calculadora de costos y precios para tus recetas</h1>
-      <p>Cargá tus ingredientes una vez y mirá cuánto te cuesta cada producto, a cuánto venderlo y cuánto ganás de verdad.</p>
+      <p class="intro-bajada">Cargá tus ingredientes una vez y mirá cuánto te cuesta cada producto, a cuánto venderlo y cuánto ganás de verdad.</p>
     </header>
 
     <Calculadora client:load />
-    <noscript><p>Para usar la calculadora necesitás tener JavaScript activado en tu navegador.</p></noscript>
+    <noscript><p class="aviso-js">Para usar la calculadora necesitás tener JavaScript activado en tu navegador.</p></noscript>
 
     <section class="explicacion" aria-labelledby="como-calcula">
+      <p class="anotacion"><span>i</span>Metodología</p>
       <h2 id="como-calcula">Cómo calcula Porción</h2>
       <p>El costo de cada unidad suma los ingredientes, el gas y la luz, tu tiempo de trabajo, la caja o el envío y una parte de tus gastos fijos.</p>
-      <p>El precio sugerido divide ese costo por lo que te queda después de tu ganancia y de los impuestos y comisiones. Así el porcentaje que elegís es lo que realmente ganás sobre el precio de venta.</p>
+      <div class="formula" role="note">
+        <p><span>Costo por unidad</span> = (ingredientes + gas y luz + tu tiempo) ÷ unidades de la tanda + caja + gastos fijos por unidad</p>
+        <p><span>Precio sugerido</span> = costo por unidad ÷ (1 − ganancia − impuestos), redondeado hacia arriba de a $50</p>
+      </div>
+      <p>Así, el porcentaje de ganancia que elegís es lo que realmente te queda sobre el precio de venta, después de pagar los impuestos y comisiones.</p>
     </section>
   </div>
 </Base>
 
 <style>
-  .pagina { display: flex; flex-direction: column; gap: 24px; padding-top: 40px; }
-  .intro { display: flex; flex-direction: column; gap: 12px; }
-  .intro > * { max-width: 720px; }
-  .explicacion { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
-  .explicacion > * { max-width: 640px; }
+  .pagina { display: flex; flex-direction: column; gap: 32px; padding-top: 40px; }
+  .intro { display: flex; flex-direction: column; gap: 16px; padding-bottom: 8px; }
+  .intro h1 { font-size: clamp(2rem, 6vw, 3.4rem); max-width: 14em; }
+  .intro-bajada { max-width: 34em; font-size: 1.08rem; }
+  .aviso-js { padding: 16px; border: 1px solid var(--guinda); color: var(--guinda-oscuro); }
+  .explicacion { display: flex; flex-direction: column; gap: 14px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--tinta); }
+  .explicacion > p { max-width: 38em; }
+  .formula { display: flex; flex-direction: column; gap: 10px; padding: 18px 20px; background: var(--carta); border-left: 3px solid var(--guinda); font: 400 0.92rem/1.6 var(--mono); max-width: 46em; }
+  .formula span { color: var(--guinda-oscuro); font-weight: 500; }
 </style>
