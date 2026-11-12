@@ -23,32 +23,41 @@ Hecha con [Astro](https://astro.build) y React, publicada en Cloudflare Pages.
 - Carpeta de salida: `dist`
 - Variable de entorno: `NODE_VERSION` = `24`
 
-## Marca
+## Marca (ruta «Rótulo»)
 
-Concepto: **el lado inteligente de la cocina**. Frase: «Cada receta tiene su número».
+**Concepto:** diseño de oficio contemporáneo. Porción rotula tus números con la misma claridad con que se marcan los cajones y las bolsas de insumos.
 
-- **Logotipo:** `porción` en minúsculas, dibujado a partir de Fraunces. La ó lleva como acento una porción: un cuarto de círculo. El punto de la i es un cuadrado apoyado sobre la misma línea.
-- **Archivos** (todos en `public/marca/`, en SVG):
-  - `logotipo-horizontal-*`: logotipo con el descriptor.
-  - `logotipo-compacto-*`: el logotipo solo.
-  - `isotipo-*`: la ó.
-  - `favicon.svg`.
-  - `avatar.svg` y `avatar.png` para redes.
-  - Las variantes `claro` van sobre fondos claros y las `oscuro` sobre fondos oscuros.
-- **Colores:**
+**Logotipo:** PORCIÓN en Chivo Black, calada como un esténcil.
+- Los cortes parten cada letra en porciones: la O en mitades, la P y la R separan el asta del ojo, la N corta su diagonal.
+- El acento de la Ó es una pieza inclinada que nace justo donde se corta la O.
+- Funciona en blanco y negro.
 
-  | Nombre | HEX | Uso |
-  | --- | --- | --- |
-  | Tinta de cocina | `#33252D` | Estructura y contraste |
-  | Papel harina | `#F3EBDD` | Fondo predominante |
-  | Guinda | `#934653` | Color distintivo |
-  | Yema tostada | `#D8A64E` | Acento limitado |
-  | Masa | `#D9D0C2` | Divisiones y superficies |
-  | Oliva apagado | `#64766B` | Solo estados positivos |
+**Archivos** (SVG, en `public/marca/`):
+- `logotipo-claro` y `logotipo-oscuro`: el logotipo solo.
+- `logotipo-negro` y `logotipo-blanco`: versiones de un color.
+- `logotipo-horizontal-*`: el logotipo con el descriptor al lado.
+- `logotipo-compacto-*`: apilado en dos líneas, POR / CIÓN.
+- `isotipo-*`: la Ó.
+- `favicon.svg`.
+- `avatar.svg` y `avatar.png` para redes.
 
-  Las variaciones tonales accesibles están en `src/styles/global.css`.
-- **Tipografías:**
-  - Fraunces: titulares.
-  - DM Sans: textos e interfaz.
-  - DM Mono: números y anotaciones.
-- **Sobre fondo oscuro:** el acento del logotipo pasa de guinda a yema.
+**Colores:**
+
+| Nombre | HEX | Uso |
+| --- | --- | --- |
+| Carbón | `#292629` | Texto, estructura y bloque de resultado |
+| Hueso | `#F4F0E8` | Fondo |
+| Pimentón | `#BF503A` | Acción principal y acento del logotipo |
+| Piedra | `#D8D3C9` | Superficies y pie de página |
+| Oliva | `#63776A` | Solo ganancia y estados positivos |
+
+Las variaciones tonales, cada una justificada por contraste, están en `src/styles/global.css`.
+
+**Tipografías:**
+- Chivo: logotipo, titulares y cifras, con números tabulares.
+- Rosario: textos e interfaz, con cifras alineadas forzadas.
+
+**Reglas:**
+- Se divide con espacio (cortes), no con líneas.
+- Sin etiquetas decorativas ni numeraciones de adorno.
+- Los números son lo más grande de cada bloque.

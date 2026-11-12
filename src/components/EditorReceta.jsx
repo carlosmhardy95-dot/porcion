@@ -29,7 +29,7 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
     <div className="pc-editor">
       <section className="pc-seccion pc-seccion-producto">
         <div className="pc-campo">
-          <label htmlFor="pc-nombre" className="pc-volanta">Producto</label>
+          <label htmlFor="pc-nombre">Producto</label>
           <input
             id="pc-nombre"
             className="pc-nombre"
@@ -191,12 +191,11 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
       <section className="pc-seccion pc-seccion-resultado" aria-labelledby="pc-resultado-titulo">
         <h2 id="pc-resultado-titulo">Resultado</h2>
         <div className="pc-ticket" role="region" aria-label="Resultado de la receta" aria-live="polite">
-          <div className="pc-ticket-titulo">
-            <span>Ficha de costos</span>
-            <span>{r.R > 1 ? `Tanda de ${cantidad(r.R)} u.` : '1 unidad'}</span>
-          </div>
           <div className="pc-precio">
-            <span className="pc-precio-etiqueta">Precio de venta sugerido</span>
+            <div className="pc-precio-cabecera">
+              <span>Precio de venta sugerido</span>
+              <span>{r.R > 1 ? `Tanda de ${cantidad(r.R)} u.` : '1 unidad'}</span>
+            </div>
             <span className="pc-grande">{r.invalido ? '—' : dinero(r.precio)}</span>
             <span className="pc-chico-tinta">
               por unidad{!r.invalido && r.R > 1 ? ` · la tanda: ${dinero(r.precio * r.R)}` : ''}

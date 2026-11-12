@@ -3,8 +3,8 @@ import { calcularReceta, dinero } from './calculo.js';
 import { LOGOTIPO } from './logotipo.js';
 
 export const TEMAS = {
-  papel: { fondo: '#F3EBDD', tinta: '#33252D', suave: '#65565D', linea: '#8A7C80', acento: '#934653' },
-  tinta: { fondo: '#33252D', tinta: '#F3EBDD', suave: '#D9D0C2', linea: '#8A7C80', acento: '#D8A64E' },
+  papel: { fondo: '#F4F0E8', tinta: '#292629', suave: '#5E595C', linea: '#8C8689', acento: '#BF503A' },
+  tinta: { fondo: '#292629', tinta: '#F4F0E8', suave: '#D8D3C9', linea: '#5E595C', acento: '#BF503A' },
 };
 
 export function etiquetaTanda(rinde) {
@@ -83,14 +83,15 @@ function lineaPunteada(ctx, x1, x2, y, color) {
 }
 
 const FUENTES = [
-  '600 120px Fraunces',
-  '600 48px "DM Sans"',
-  '400 36px "DM Sans"',
-  '500 48px "DM Mono"',
-  '400 34px "DM Mono"',
+  '900 120px Chivo',
+  '800 48px Chivo',
+  '700 48px Rosario',
+  '400 36px Chivo',
+  '700 42px Chivo',
+  '400 36px Rosario',
 ];
-const SANS = '"DM Sans", system-ui, sans-serif';
-const MONO = '"DM Mono", ui-monospace, monospace';
+const SANS = 'Rosario, system-ui, sans-serif';
+const MONO = 'Chivo, system-ui, sans-serif';
 
 function dibujarLogotipo(ctx, x, y, alto, color, acento) {
   if (typeof Path2D === 'undefined') return;
@@ -125,20 +126,12 @@ export async function dibujarLista(canvas, lista, items) {
   ctx.fillRect(0, 0, W, H);
   ctx.textBaseline = 'alphabetic';
 
-  // Porción geométrica: cuarto de círculo en la esquina.
-  ctx.fillStyle = t.acento;
-  ctx.beginPath();
-  ctx.moveTo(W, 0);
-  ctx.arc(W, 0, 150, Math.PI / 2, Math.PI);
-  ctx.closePath();
-  ctx.fill();
-
-  let y = 200;
+  let y = 170;
 
   if (lista.negocio) {
     ctx.fillStyle = t.tinta;
-    ctx.font = `400 34px ${MONO}`;
-    ctx.fillText(recortar(ctx, lista.negocio.toUpperCase(), ANCHO - 120), X, y);
+    ctx.font = `700 40px ${SANS}`;
+    ctx.fillText(recortar(ctx, lista.negocio, ANCHO), X, y);
     y += 30;
   }
 
@@ -147,7 +140,7 @@ export async function dibujarLista(canvas, lista, items) {
   let tam = 120;
   for (const prueba of [120, 100, 84]) {
     tam = prueba;
-    ctx.font = `600 ${tam}px Fraunces, Georgia, serif`;
+    ctx.font = `900 ${tam}px Chivo, 'Arial Black', sans-serif`;
     if (envolver(ctx, titulo, ANCHO, 3).length <= 2) break;
   }
   envolver(ctx, titulo, ANCHO, 2).forEach((l) => {
@@ -157,11 +150,11 @@ export async function dibujarLista(canvas, lista, items) {
 
   y += 90;
   ctx.fillStyle = t.suave;
-  ctx.font = `400 34px ${MONO}`;
-  ctx.fillText(fechaLista().toUpperCase(), X, y);
+  ctx.font = `400 36px ${MONO}`;
+  ctx.fillText(fechaLista(), X, y);
 
   y += 60;
-  lineaPunteada(ctx, X, X + ANCHO, y, t.linea);
+  // Sin líneas: el espacio separa la cabecera de los productos.
 
   const pieArriba = H - 340;
   const espacio = pieArriba - y - 40;
@@ -172,7 +165,7 @@ export async function dibujarLista(canvas, lista, items) {
 
   items.forEach((item) => {
     const base = fila + 62 * s;
-    ctx.font = `500 ${Math.round(54 * s)}px ${MONO}`;
+    ctx.font = `800 ${Math.round(56 * s)}px ${MONO}`;
     const textoPrecio = dinero(item.precio);
     const anchoPrecio = ctx.measureText(textoPrecio).width;
     ctx.fillStyle = t.tinta;
@@ -182,10 +175,10 @@ export async function dibujarLista(canvas, lista, items) {
 
     const anchoNombre = ANCHO - anchoPrecio - 80;
     let tamNombre = 48 * s;
-    ctx.font = `600 ${Math.round(tamNombre)}px ${SANS}`;
+    ctx.font = `700 ${Math.round(tamNombre)}px ${SANS}`;
     while (ctx.measureText(item.nombre).width > anchoNombre && tamNombre > 36 * s) {
       tamNombre -= 2;
-      ctx.font = `600 ${Math.round(tamNombre)}px ${SANS}`;
+      ctx.font = `700 ${Math.round(tamNombre)}px ${SANS}`;
     }
     const nombre = recortar(ctx, item.nombre, anchoNombre);
     ctx.fillText(nombre, X, base);
@@ -211,14 +204,14 @@ export async function dibujarLista(canvas, lista, items) {
     ctx.fillText('Elegí productos para tu lista.', X, fila + 60);
   }
 
-  lineaPunteada(ctx, X, X + ANCHO, pieArriba, t.linea);
+
   if (lista.contacto) {
     ctx.fillStyle = t.tinta;
-    ctx.font = `600 44px ${SANS}`;
+    ctx.font = `700 42px ${MONO}`;
     envolver(ctx, lista.contacto, ANCHO, 2).forEach((l, i) => ctx.fillText(l, X, pieArriba + 90 + i * 56));
   }
   ctx.fillStyle = t.suave;
-  ctx.font = `400 28px ${MONO}`;
-  ctx.fillText('HECHA CON', X, H - 108);
-  dibujarLogotipo(ctx, X + ctx.measureText("HECHA CON").width + 18, H - 147, 46, t.suave, t.acento);
+  ctx.font = `400 30px ${SANS}`;
+  ctx.fillText('Hecha con', X, H - 100);
+  dibujarLogotipo(ctx, X + ctx.measureText('Hecha con').width + 16, H - 136, 40, t.suave, t.acento);
 }

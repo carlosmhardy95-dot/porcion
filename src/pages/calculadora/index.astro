@@ -8,7 +8,6 @@ import Calculadora from '../../components/Calculadora.jsx';
 >
   <div class="contenedor pagina">
     <header class="intro">
-      <p class="anotacion"><span>→</span>Calculadora</p>
       <h1>Calculadora de costos y precios para tus recetas</h1>
       <p class="intro-bajada">Cargá tus ingredientes una vez y mirá cuánto te cuesta cada producto, a cuánto venderlo y cuánto ganás de verdad.</p>
     </header>
@@ -17,7 +16,6 @@ import Calculadora from '../../components/Calculadora.jsx';
     <noscript><p class="aviso-js">Para usar la calculadora necesitás tener JavaScript activado en tu navegador.</p></noscript>
 
     <section class="explicacion" aria-labelledby="como-calcula">
-      <p class="anotacion"><span>i</span>Metodología</p>
       <h2 id="como-calcula">Cómo calcula Porción</h2>
       <p>El costo de cada unidad suma los ingredientes, el gas y la luz, tu tiempo de trabajo, la caja o el envío y una parte de tus gastos fijos.</p>
       <div class="formula" role="note">
@@ -30,13 +28,13 @@ import Calculadora from '../../components/Calculadora.jsx';
 </Base>
 
 <style>
-  .pagina { display: flex; flex-direction: column; gap: 32px; padding-top: 40px; }
-  .intro { display: flex; flex-direction: column; gap: 16px; padding-bottom: 8px; }
-  .intro h1 { font-size: clamp(2rem, 6vw, 3.4rem); max-width: 14em; }
-  .intro-bajada { max-width: 34em; font-size: 1.08rem; }
-  .aviso-js { padding: 16px; border: 1px solid var(--guinda); color: var(--guinda-oscuro); }
-  .explicacion { display: flex; flex-direction: column; gap: 14px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--tinta); }
-  .explicacion > p { max-width: 38em; }
-  .formula { display: flex; flex-direction: column; gap: 10px; padding: 18px 20px; background: var(--carta); border-left: 3px solid var(--guinda); font: 400 0.92rem/1.6 var(--mono); max-width: 46em; }
-  .formula span { color: var(--guinda-oscuro); font-weight: 500; }
+  .pagina { display: flex; flex-direction: column; gap: 28px; padding-top: 32px; }
+  .intro { display: flex; flex-direction: column; gap: 14px; }
+  .intro h1 { font-size: clamp(2rem, 6.4vw, 3.4rem); max-width: 13em; }
+  .intro-bajada { max-width: 34em; font-size: 1.08rem; color: var(--carbon-suave); }
+  .aviso-js { padding: 16px; background: var(--pimenton-claro); color: var(--pimenton-oscuro); border-radius: var(--radio); }
+  .explicacion { display: flex; flex-direction: column; gap: 14px; margin-top: 64px; }
+  .explicacion > p { max-width: 38em; color: var(--carbon-suave); }
+  .formula { display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--piedra-clara); border-radius: var(--radio); max-width: 46em; font-size: 0.98rem; }
+  .formula span { font-weight: 700; color: var(--carbon); }
 </style>

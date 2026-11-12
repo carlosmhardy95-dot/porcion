@@ -23,7 +23,7 @@ const ruta = Astro.url.pathname;
   <meta name="description" content={description}>
   <link rel="canonical" href={canonical}>
   <meta name="robots" content={robots}>
-  <meta name="theme-color" content="#F3EBDD">
+  <meta name="theme-color" content="#F4F0E8">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/iconos/apple-touch-icon.png">
@@ -47,15 +47,15 @@ const ruta = Astro.url.pathname;
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400..700&family=Fraunces:opsz,wght@9..144,500..700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@400..900&family=Rosario:wght@400..700&display=swap">
   <slot name="head" />
 </head>
 <body>
   <a class="solo-lectores" href="#contenido">Ir al contenido</a>
   <header class="encabezado">
     <div class="contenedor encabezado-fila">
-      <a href="/" class="encabezado-marca" aria-label="porción, ir al inicio">
-        <Logotipo alto={30} etiqueta="porción" />
+      <a href="/" class="encabezado-marca" aria-label="Porción, ir al inicio">
+        <Logotipo alto={24} etiqueta="Porción" />
       </a>
       <nav aria-label="Principal">
         <a href="/calculadora/" class="encabezado-enlace" aria-current={ruta.startsWith('/calculadora') ? 'page' : undefined}>Calculadora</a>
@@ -70,7 +70,7 @@ const ruta = Astro.url.pathname;
   <footer class="pie">
     <div class="contenedor pie-grilla">
       <div class="pie-marca">
-        <Logotipo alto={40} etiqueta="porción" />
+        <Logotipo alto={30} etiqueta="Porción" />
         <p class="pie-frase">Calculá mejor. Ganá con claridad.</p>
       </div>
       <nav class="pie-enlaces" aria-label="Pie de página">
@@ -92,32 +92,32 @@ const ruta = Astro.url.pathname;
 </html>
 
 <style>
-  .encabezado { border-bottom: 1px solid var(--masa); background: var(--harina); }
-  .encabezado-fila { display: flex; align-items: center; justify-content: space-between; min-height: 68px; }
-  .encabezado-marca { display: inline-flex; color: var(--tinta); padding: 6px 0; }
-  .encabezado-marca:hover { color: var(--tinta); }
+  .encabezado { background: var(--hueso); }
+  .encabezado-fila { display: flex; align-items: center; justify-content: space-between; min-height: 72px; }
+  .encabezado-marca { display: inline-flex; color: var(--carbon); padding: 8px 0; }
+  .encabezado-marca:hover { color: var(--carbon); }
   .encabezado-enlace {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    font: 500 0.95rem var(--sans);
+    padding: 0 14px;
+    border-radius: var(--radio);
+    font: 700 0.95rem var(--texto);
     text-decoration: none;
-    border-bottom: 2px solid transparent;
   }
-  .encabezado-enlace:hover,
-  .encabezado-enlace[aria-current='page'] { border-bottom-color: var(--guinda); color: var(--tinta); }
+  .encabezado-enlace:hover { background: var(--piedra-clara); color: var(--carbon); }
+  .encabezado-enlace[aria-current='page'] { background: var(--carbon); color: var(--hueso); }
 
   main { min-height: 60vh; }
 
-  .pie { margin-top: 96px; background: var(--tinta); color: var(--harina); --logo-acento: var(--yema); }
-  .pie-grilla { display: grid; gap: 28px; padding-top: 48px; padding-bottom: 48px; }
-  .pie-marca { display: flex; flex-direction: column; gap: 14px; }
-  .pie-frase { font: 500 1.25rem/1.3 var(--serif); font-variation-settings: 'opsz' 48; }
-  .pie-enlaces { display: flex; flex-wrap: wrap; gap: 8px 24px; }
-  .pie-enlaces a { color: var(--harina); display: inline-flex; align-items: center; min-height: 44px; }
-  .pie-enlaces a:hover { color: var(--yema); }
-  .pie-nota { font-size: 0.85rem; color: var(--masa); max-width: 34em; padding-top: 20px; border-top: 1px solid rgba(243, 235, 221, 0.18); }
-  .pie :focus-visible { outline-color: var(--yema); }
+  main { padding-bottom: 112px; }
+  .pie { background: var(--piedra); color: var(--carbon); }
+  .pie-grilla { display: grid; gap: 24px; padding-top: 48px; padding-bottom: 40px; }
+  .pie-marca { display: flex; flex-direction: column; gap: 14px; color: var(--carbon); }
+  .pie-frase { font: 800 1.15rem/1.3 var(--titulo); letter-spacing: -0.01em; }
+  .pie-enlaces { display: flex; flex-wrap: wrap; gap: 4px 24px; }
+  .pie-enlaces a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; }
+  .pie-nota { font-size: 0.88rem; color: var(--carbon-suave); max-width: 36em; }
 
   @media (min-width: 768px) {
     .pie-grilla { grid-template-columns: 1fr auto; align-items: start; }

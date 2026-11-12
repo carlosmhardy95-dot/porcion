@@ -1,50 +1,53 @@
 /* ==========================================================================
-   porción — sistema visual
-   Concepto: el lado inteligente de la cocina.
-   Paleta oficial + variaciones tonales accesibles para estados de interfaz.
+   Porción — sistema visual «Rótulo»
+   Concepto: diseño de oficio contemporáneo. Rotular los números con la claridad
+   con que se marcan cajones y bolsas de insumos. Se divide con espacio (cortes),
+   no con líneas; los números mandan.
    ========================================================================== */
 :root {
-  /* Paleta oficial */
-  --tinta: #33252D;        /* estructura y contraste */
-  --harina: #F3EBDD;       /* fondo predominante */
-  --guinda: #934653;       /* color distintivo */
-  --yema: #D8A64E;         /* acento limitado */
-  --masa: #D9D0C2;         /* superficies y divisiones */
-  --oliva: #64766B;        /* estados positivos (gráficos) */
+  /* Paleta */
+  --carbon: #292629;        /* texto, estructura y bloques de resultado */
+  --hueso: #F4F0E8;         /* fondo */
+  --pimenton: #BF503A;      /* acción principal y acento del logotipo */
+  --piedra: #D8D3C9;        /* superficies, campos secundarios, pie */
+  --oliva: #63776A;         /* solo ganancia y estados positivos */
 
-  /* Variaciones tonales (contraste AA sobre harina) */
-  --tinta-suave: #65565D;  /* textos secundarios · 5,8:1 */
-  --guinda-oscuro: #7A3843;/* hover y errores · 7,2:1 */
-  --guinda-claro: #F0DCDA; /* fondo de error */
-  --oliva-oscuro: #4C5C52; /* texto positivo · 6:1 */
-  --oliva-claro: #DFE5DC;  /* fondo positivo */
-  --yema-claro: #F3E1B9;   /* resaltados */
-  --carta: #FBF7F0;        /* superficie de fichas y campos */
-  --borde: #8A7C80;        /* borde de campos · 3,4:1 */
+  /* Variaciones tonales (justificadas por contraste AA) */
+  --carbon-suave: #5E595C;   /* texto secundario · 6:1 sobre hueso */
+  --pimenton-oscuro: #9E3F2C;/* texto de error y hover · 5,8:1 */
+  --pimenton-claro: #F6DED6; /* fondo de error */
+  --oliva-oscuro: #4A5B50;   /* texto positivo · 6,4:1 */
+  --oliva-claro: #DDE5DF;    /* fondo positivo */
+  --oliva-luz: #A3B8AA;      /* ganancia sobre carbón · 7:1 */
+  --piedra-clara: #EAE6DF;   /* superficies de trabajo */
+  --borde: #8C8689;          /* borde de campos · 3,1:1 */
+  --blanco: #FFFFFF;         /* interior de campos y texto sobre pimentón */
 
-  --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
-  --sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --mono: 'DM Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --titulo: 'Chivo', 'Arial Black', system-ui, sans-serif;
+  --texto: 'Rosario', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --ancho: 1120px;
-  --radio: 4px;
-  --logo-acento: var(--guinda);
+  --radio: 3px;
+  --logo-acento: var(--pimenton);
 }
 
 *,
 *::before,
-*::after { box-sizing: border-box; }
+*::after {
+  box-sizing: border-box;
+  /* Rosario trae cifras de estilo antiguo: forzamos cifras alineadas en todo
+     (el atajo «font» las reinicia, por eso va con !important). */
+  font-feature-settings: 'lnum' 1 !important;
+}
 
 html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  background: var(--harina);
-  color: var(--tinta);
-  font-family: var(--sans);
-  font-size: 17px;
-  line-height: 1.55;
-  font-optical-sizing: auto;
+  background: var(--hueso);
+  color: var(--carbon);
+  font: 400 17px/1.55 var(--texto);
+  font-variant-numeric: lining-nums;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -52,28 +55,29 @@ img, svg { max-width: 100%; height: auto; }
 
 h1, h2, h3 {
   margin: 0;
-  font-family: var(--serif);
-  font-weight: 600;
-  line-height: 1.08;
-  letter-spacing: -0.005em;
-  font-variation-settings: 'opsz' 144;
+  font-family: var(--titulo);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
 }
-h1 { font-size: clamp(2.4rem, 7.2vw, 4.6rem); letter-spacing: -0.012em; }
-h2 { font-size: clamp(1.7rem, 4.4vw, 2.6rem); letter-spacing: -0.008em; }
-h3 { font-size: 1.3rem; font-variation-settings: 'opsz' 48; }
+h1 { font-size: clamp(2.4rem, 8vw, 4.4rem); }
+h2 { font-size: clamp(1.7rem, 4.6vw, 2.5rem); line-height: 1.06; }
+h3 { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; }
 p { margin: 0; }
 
-a { color: var(--tinta); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-a:hover { color: var(--guinda); }
+a { color: var(--carbon); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--pimenton-oscuro); }
 
-:focus-visible { outline: 2px solid var(--guinda); outline-offset: 3px; }
-
-::selection { background: var(--yema-claro); color: var(--tinta); }
+:focus-visible { outline: 3px solid var(--carbon); outline-offset: 2px; }
+::selection { background: var(--piedra); }
 
 .contenedor { width: 100%; max-width: var(--ancho); margin: 0 auto; padding: 0 20px; }
 @media (min-width: 768px) { .contenedor { padding: 0 32px; } }
 
-/* Botones */
+/* Cifras: Chivo con números tabulares, para que los montos se alineen */
+.cifra { font-family: var(--titulo); font-variant-numeric: tabular-nums lining-nums; letter-spacing: -0.02em; }
+
+/* Botones: bloques rectos */
 .boton,
 .boton-secundario {
   display: inline-flex;
@@ -83,38 +87,16 @@ a:hover { color: var(--guinda); }
   min-height: 52px;
   padding: 0 24px;
   border-radius: var(--radio);
-  font: 600 1rem/1 var(--sans);
+  font: 700 1rem/1 var(--texto);
   text-decoration: none;
   transition: background-color 120ms ease, color 120ms ease;
 }
-.boton { background: var(--guinda); color: var(--harina); border: 0; }
-.boton:hover { background: var(--guinda-oscuro); color: var(--harina); }
-.boton-secundario { border: 1.5px solid var(--tinta); color: var(--tinta); background: transparent; }
-.boton-secundario:hover { background: var(--tinta); color: var(--harina); }
+.boton { background: var(--pimenton); color: var(--blanco); border: 0; }
+.boton:hover { background: var(--pimenton-oscuro); color: var(--blanco); }
+.boton-secundario { border: 2px solid var(--carbon); color: var(--carbon); background: transparent; }
+.boton-secundario:hover { background: var(--carbon); color: var(--hueso); }
 
-/* Lenguaje gráfico
-   A · anotaciones de cocina: numeraciones y márgenes en mono */
-.anotacion {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 12px;
-  font: 500 0.75rem/1.2 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
-}
-.anotacion span {
-  color: var(--guinda);
-  padding-right: 12px;
-  border-right: 1px solid var(--masa);
-}
-/* B · números protagonistas */
-.cifra { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
-/* C · porciones geométricas: cuarto de círculo */
-.cuarto { display: block; width: 48px; aspect-ratio: 1; background: var(--guinda); border-top-right-radius: 100%; }
-.regla { border: 0; border-top: 1px dashed var(--tinta-suave); opacity: 0.5; margin: 0; }
-
-.texto-suave { color: var(--tinta-suave); }
+.texto-suave { color: var(--carbon-suave); }
 
 .solo-lectores {
   position: absolute;

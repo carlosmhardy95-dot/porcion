@@ -11,21 +11,23 @@ const receta = estado.recetas.find((r) => r.id === recetaId);
 const insumos = Object.fromEntries(estado.insumos.map((i) => [i.id, i]));
 const r = calcularReceta(receta, insumos, estado.negocio);
 const impuestos = r.precio * (num(receta.impuestos) / 100);
-const margen = Math.round((r.ganancia / r.precio) * 100);
+const margen = (Math.round((r.ganancia / r.precio) * 1000) / 10).toLocaleString('es-AR');
 
+// Cada tramo con su color: costos en grises de carbón y piedra, ingredientes en pimentón,
+// ganancia en oliva (el único positivo).
 const COLORES = {
-  ingredientes: 'var(--guinda)',
-  tiempo: 'var(--tinta)',
-  fijos: 'var(--tinta-suave)',
-  caja: 'var(--masa)',
-  gas: 'var(--yema)',
+  tiempo: 'var(--carbon)',
+  ingredientes: 'var(--pimenton)',
+  fijos: 'var(--carbon-suave)',
+  caja: 'var(--borde)',
+  gas: 'var(--piedra)',
 };
 const tramos = [
   ...r.partes.map((p) => ({ clave: p.clave, etiqueta: p.etiqueta, valor: p.valor, color: COLORES[p.clave] })),
-  { clave: 'impuestos', etiqueta: 'Impuestos y comisiones', valor: impuestos, color: 'var(--carta)' },
+  { clave: 'impuestos', etiqueta: 'Impuestos y comisiones', valor: impuestos, color: 'var(--piedra-clara)' },
   { clave: 'ganancia', etiqueta: 'Tu ganancia', valor: r.ganancia, color: 'var(--oliva)' },
 ];
-const porcentaje = (v) => `${((v / r.precio) * 100).toFixed(2)}%`;
+const ancho = (v) => `${((v / r.precio) * 100).toFixed(2)}%`;
 ---
 <Base
   title="Porción: calculá el costo y el precio de tus recetas"
@@ -33,205 +35,140 @@ const porcentaje = (v) => `${((v / r.precio) * 100).toFixed(2)}%`;
 >
   <section class="contenedor portada">
     <div class="portada-texto">
-      <p class="anotacion"><span>01</span>Gratis · para gastronomía</p>
       <h1>Que tus números cierren tan bien como tus recetas.</h1>
       <p class="bajada">Calculá cuánto te cuesta producir, definí tus precios de venta y descubrí cuánto ganás realmente. Gratis y sin complicaciones.</p>
       <div class="acciones">
-        <a class="boton" href="/calculadora/">
-          Calcular mis costos
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </a>
-        <a class="enlace-ejemplo" href="/calculadora/?ejemplo=alfajores">Probar con un ejemplo</a>
+        <a class="boton" href="/calculadora/">Calcular mis costos</a>
+        <a class="enlace-ejemplo" href="/calculadora/?ejemplo=alfajores">Ver un ejemplo</a>
       </div>
     </div>
 
-    <figure class="ficha" aria-labelledby="ficha-pie">
-      <span class="ficha-cuarto" aria-hidden="true"></span>
-      <div class="ficha-cabecera">
-        <span>Ficha N.º 001</span>
-        <span>Rinde {r.R} u.</span>
-      </div>
-      <p class="ficha-producto">{receta.nombre}</p>
-      <dl class="ficha-filas">
-        <div><dt>Costo total de producción</dt><dd class="cifra">{dinero(r.C * r.R)}</dd></div>
+    <figure class="resultado" aria-labelledby="resultado-pie">
+      <p class="resultado-etiqueta">Precio de venta sugerido</p>
+      <p class="resultado-precio cifra">{dinero(r.precio)}</p>
+      <dl class="resultado-cifras">
         <div><dt>Costo por unidad</dt><dd class="cifra">{dinero(r.C)}</dd></div>
-      </dl>
-      <div class="ficha-precio">
-        <span>Precio de venta sugerido</span>
-        <strong class="cifra">{dinero(r.precio)}</strong>
-      </div>
-      <dl class="ficha-filas ficha-final">
+        <div><dt>Costo de la tanda</dt><dd class="cifra">{dinero(r.C * r.R)}</dd></div>
         <div><dt>Ganancia real</dt><dd class="cifra positivo">{dinero(r.ganancia)}</dd></div>
         <div><dt>Margen</dt><dd class="cifra">{margen} %</dd></div>
       </dl>
-      <figcaption id="ficha-pie">Ejemplo con precios de muestra, por unidad.</figcaption>
+      <figcaption id="resultado-pie">Ejemplo: {receta.nombre.toLowerCase()}, tanda de {r.R}, con precios de muestra.</figcaption>
     </figure>
   </section>
 
   <section class="contenedor reparto" aria-labelledby="reparto-titulo">
-    <p class="anotacion"><span>02</span>Dónde va cada peso</p>
-    <h2 id="reparto-titulo">De cada <span class="cifra">{dinero(r.precio)}</span> que cobrás, <span class="cifra subrayado">{dinero(r.ganancia)}</span> son tuyos.</h2>
-    <div class="reparto-barra" aria-hidden="true">
-      {tramos.map((t) => (
-        <span class={`tramo tramo-${t.clave}`} style={`width:${porcentaje(t.valor)};background:${t.color}`}></span>
-      ))}
+    <h2 id="reparto-titulo">De cada <span class="cifra">{dinero(r.precio)}</span> que cobrás, <span class="cifra ganancia">{dinero(r.ganancia)}</span> son tuyos.</h2>
+    <p class="reparto-bajada">El resto paga lo que no siempre se ve: tu tiempo, los ingredientes, los gastos fijos, la caja, el gas y los impuestos.</p>
+    <div class="barra" aria-hidden="true">
+      {tramos.map((t) => <span style={`width:${ancho(t.valor)};background:${t.color}`}></span>)}
     </div>
-    <ol class="reparto-lista">
+    <ul class="leyenda">
       {tramos.map((t) => (
         <li class={t.clave === 'ganancia' ? 'es-ganancia' : ''}>
-          <span class={`muestra tramo-${t.clave}`} style={`background:${t.color}`} aria-hidden="true"></span>
-          <span class="reparto-etiqueta">{t.etiqueta}</span>
+          <span class="muestra" style={`background:${t.color}`} aria-hidden="true"></span>
+          <span>{t.etiqueta}</span>
           <span class="cifra">{dinero(t.valor)}</span>
         </li>
       ))}
-    </ol>
-    <p class="nota">Alfajores de maicena, tanda de {r.R}, con {num(receta.ganancia)} % de ganancia y {num(receta.impuestos)} % de impuestos. Valores de ejemplo.</p>
-  </section>
-
-  <section class="contenedor pasos" aria-labelledby="pasos-titulo">
-    <p class="anotacion"><span>03</span>Cómo funciona</p>
-    <h2 id="pasos-titulo">Tres pasos, sin planillas.</h2>
-    <ol class="pasos-lista">
-      <li>
-        <span class="paso-numero cifra">01</span>
-        <h3>Cargá tus ingredientes</h3>
-        <p>Lo que pagás por cada paquete y cuánto usás en la receta. Porción hace la cuenta.</p>
-      </li>
-      <li>
-        <span class="paso-numero cifra">02</span>
-        <h3>Sumá lo que no se ve</h3>
-        <p>El gas y la luz, tu tiempo, la caja y los gastos fijos del mes.</p>
-      </li>
-      <li>
-        <span class="paso-numero cifra">03</span>
-        <h3>Mirá tu número</h3>
-        <p>Costo por unidad, precio sugerido y cuánto ganás de verdad en cada venta.</p>
-      </li>
-    </ol>
-  </section>
-
-  <section class="contenedor incluye" aria-labelledby="incluye-titulo">
-    <p class="anotacion"><span>04</span>Hecha para tu cocina</p>
-    <h2 id="incluye-titulo" class="solo-lectores">Qué incluye</h2>
-    <ul class="incluye-lista">
-      <li><strong>Despensa compartida.</strong> Cargás un ingrediente una vez y lo usás en todas tus recetas. Si sube, se actualizan todas.</li>
-      <li><strong>Lista de precios.</strong> Armá una imagen para historias y el texto para WhatsApp con tus productos.</li>
-      <li><strong>Funciona sin internet.</strong> Instalala en el celular como una app.</li>
-      <li><strong>Tus datos son tuyos.</strong> Sin registro. Todo queda en tu dispositivo y podés descargar una copia.</li>
     </ul>
   </section>
 
-  <section class="frase" aria-labelledby="frase-titulo">
-    <div class="contenedor frase-fila">
-      <span class="frase-cuarto" aria-hidden="true"></span>
-      <h2 id="frase-titulo">Cada receta tiene su número.</h2>
-      <a class="boton boton-claro" href="/calculadora/">Calcular mis costos</a>
+  <section class="contenedor pasos" aria-labelledby="pasos-titulo">
+    <h2 id="pasos-titulo">Tres pasos. Sin planillas.</h2>
+    <div class="pasos-grilla">
+      <article>
+        <h3>Cargá tus ingredientes</h3>
+        <p>Lo que pagás por cada paquete y cuánto usás. Porción hace la cuenta por vos.</p>
+      </article>
+      <article>
+        <h3>Sumá lo que no se ve</h3>
+        <p>El gas y la luz, tu tiempo de trabajo, la caja y los gastos fijos del mes.</p>
+      </article>
+      <article>
+        <h3>Mirá tu número</h3>
+        <p>Costo por unidad, precio sugerido y cuánto ganás de verdad en cada venta.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="contenedor incluye" aria-labelledby="incluye-titulo">
+    <h2 id="incluye-titulo">Hecha para tu cocina.</h2>
+    <dl class="incluye-lista">
+      <div><dt>Despensa compartida</dt><dd>Cargás un ingrediente una vez y lo usás en todas tus recetas. Si sube, se actualizan todas.</dd></div>
+      <div><dt>Lista de precios</dt><dd>Una imagen para historias y el texto para WhatsApp, armados con tus productos.</dd></div>
+      <div><dt>Funciona sin internet</dt><dd>Instalala en el celular como una app.</dd></div>
+      <div><dt>Tus datos son tuyos</dt><dd>Sin registro. Todo queda en tu dispositivo y podés descargar una copia.</dd></div>
+    </dl>
+  </section>
+
+  <section class="cierre" aria-labelledby="cierre-titulo">
+    <div class="contenedor cierre-fila">
+      <h2 id="cierre-titulo">Cada receta tiene su número.</h2>
+      <div class="cierre-accion">
+        <a class="boton" href="/calculadora/">Calcular mis costos</a>
+      </div>
     </div>
   </section>
 </Base>
 
 <style>
-  /* Portada */
-  .portada { display: grid; gap: 48px; padding-top: 48px; padding-bottom: 24px; }
-  .portada-texto { display: flex; flex-direction: column; gap: 24px; }
-  .portada h1 { max-width: 11.5em; }
-  .bajada { font-size: 1.15rem; max-width: 32em; color: var(--tinta); }
-  .acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 4px; }
-  .enlace-ejemplo { display: inline-flex; align-items: center; min-height: 44px; font-weight: 500; }
+  .portada { display: grid; gap: 40px; padding-top: 40px; }
+  .portada-texto { display: flex; flex-direction: column; gap: 22px; }
+  .portada h1 { max-width: 11em; }
+  .bajada { font-size: 1.15rem; max-width: 30em; color: var(--carbon-suave); }
+  .acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 6px; }
+  .enlace-ejemplo { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; }
 
-  /* Ficha de costos: anotación de cocina + números protagonistas */
-  .ficha {
-    position: relative;
-    margin: 0;
-    padding: 24px 22px 20px;
-    background: var(--carta);
-    border: 1px solid var(--tinta);
-    border-radius: var(--radio);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    overflow: hidden;
-  }
-  .ficha-cuarto { position: absolute; top: 0; right: 0; width: 64px; height: 64px; background: var(--guinda); border-bottom-left-radius: 100%; }
-  .ficha-cabecera {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding-right: 64px;
-    padding-bottom: 12px;
-    border-bottom: 1px dashed var(--borde);
-    font: 500 0.7rem/1.3 var(--mono);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--tinta-suave);
-  }
-  .ficha-producto { font: 600 1.6rem/1.1 var(--serif); font-variation-settings: 'opsz' 72; letter-spacing: -0.01em; }
-  .ficha-filas { margin: 0; display: flex; flex-direction: column; gap: 8px; }
-  .ficha-filas div { display: flex; align-items: baseline; gap: 8px; }
-  .ficha-filas dt { font-size: 0.95rem; color: var(--tinta-suave); }
-  .ficha-filas div::after { content: ''; order: 1; flex: 1; border-bottom: 1px dotted var(--borde); transform: translateY(-4px); }
-  .ficha-filas dd { order: 2; margin: 0; font-size: 1.05rem; }
-  .ficha-precio {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 16px 0;
-    border-top: 1px solid var(--tinta);
-    border-bottom: 1px solid var(--tinta);
-  }
-  .ficha-precio span { font: 500 0.75rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--guinda); }
-  .ficha-precio strong { font-size: clamp(3rem, 13vw, 4.4rem); font-weight: 500; line-height: 1; letter-spacing: -0.04em; }
-  .positivo { color: var(--oliva-oscuro); }
-  .ficha figcaption { font-size: 0.8rem; color: var(--tinta-suave); }
+  /* Bloque de resultado: el número manda */
+  .resultado { margin: 0; padding: 24px; background: var(--carbon); color: var(--hueso); border-radius: var(--radio); display: flex; flex-direction: column; }
+  .resultado-etiqueta { font-weight: 600; color: var(--piedra); }
+  .resultado-precio { font-size: clamp(4rem, 19vw, 6rem); font-weight: 900; line-height: 1; letter-spacing: -0.045em; margin: 4px 0 20px; }
+  .resultado-cifras { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .resultado-cifras div { padding: 12px 14px; background: rgba(244, 240, 232, 0.08); border-radius: 2px; }
+  .resultado-cifras dt { font-size: 0.88rem; color: var(--piedra); }
+  .resultado-cifras dd { margin: 2px 0 0; font-size: 1.45rem; font-weight: 800; }
+  .positivo { color: var(--oliva-luz); }
+  .resultado figcaption { margin-top: 16px; font-size: 0.85rem; color: var(--piedra); }
 
-  /* Reparto del precio: porciones geométricas */
-  .reparto { display: flex; flex-direction: column; gap: 20px; padding-top: 72px; }
-  .reparto h2 { max-width: 16em; }
-  .subrayado { box-shadow: inset 0 -0.18em 0 var(--yema-claro); }
-  .reparto-barra { display: flex; height: 56px; border: 1px solid var(--tinta); border-radius: var(--radio); overflow: hidden; }
-  .tramo { display: block; height: 100%; border-right: 1px solid var(--tinta); }
-  .tramo:last-child { border-right: 0; }
-  .reparto-lista { list-style: none; margin: 0; padding: 0; display: grid; column-gap: 48px; }
-  .reparto h2 .cifra { font-size: 0.9em; font-weight: 500; letter-spacing: -0.03em; }
-  .reparto-lista li { display: grid; grid-template-columns: 14px 1fr auto; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--masa); }
-  .reparto-lista .cifra { font-size: 1.05rem; }
-  .muestra { width: 14px; height: 14px; border: 1px solid var(--tinta); border-top-right-radius: 100%; }
-  .es-ganancia { font-weight: 600; }
-  .es-ganancia .cifra { color: var(--oliva-oscuro); }
-  .nota { font-size: 0.85rem; color: var(--tinta-suave); }
+  /* Reparto del precio: la barra se divide con cortes, como el calado del logo */
+  .reparto { display: flex; flex-direction: column; gap: 18px; padding-top: 96px; }
+  .reparto h2 { max-width: 15em; }
+  .reparto h2 .cifra { font-weight: 900; }
+  .ganancia { color: var(--oliva-oscuro); }
+  .reparto-bajada { color: var(--carbon-suave); max-width: 34em; }
+  .barra { display: flex; gap: 4px; height: 44px; margin-top: 10px; }
+  .barra span { display: block; min-width: 4px; border-radius: 2px; }
+  .leyenda { list-style: none; margin: 4px 0 0; padding: 0; display: grid; column-gap: 40px; row-gap: 2px; }
+  .leyenda li { display: grid; grid-template-columns: 14px 1fr auto; align-items: center; gap: 12px; padding: 8px 0; }
+  .leyenda .cifra { font-weight: 700; font-size: 1.05rem; }
+  .muestra { width: 14px; height: 14px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(41, 38, 41, 0.18); }
+  .es-ganancia { font-weight: 700; color: var(--oliva-oscuro); }
 
-  /* Pasos */
-  .pasos { display: flex; flex-direction: column; gap: 20px; padding-top: 80px; }
-  .pasos-lista { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--tinta); }
-  .pasos-lista li { display: grid; grid-template-columns: 56px 1fr; column-gap: 12px; row-gap: 6px; padding: 22px 0; border-bottom: 1px solid var(--masa); }
-  .paso-numero { grid-row: span 2; font-size: 1.6rem; color: var(--guinda); line-height: 1.1; }
-  .pasos-lista p { color: var(--tinta-suave); max-width: 28em; }
+  /* Pasos y beneficios: bloques separados por cortes */
+  .pasos, .incluye { display: flex; flex-direction: column; gap: 24px; padding-top: 96px; }
+  .pasos-grilla { display: grid; gap: 6px; }
+  .pasos-grilla article { padding: 24px; background: var(--piedra-clara); border-radius: var(--radio); display: flex; flex-direction: column; gap: 8px; }
+  .pasos-grilla p { color: var(--carbon-suave); }
+  .incluye-lista { margin: 0; display: grid; gap: 22px 40px; }
+  .incluye-lista dt { font: 800 1.1rem/1.25 var(--titulo); letter-spacing: -0.01em; margin-bottom: 4px; }
+  .incluye-lista dd { margin: 0; color: var(--carbon-suave); max-width: 30em; }
 
-  /* Incluye */
-  .incluye { display: flex; flex-direction: column; gap: 20px; padding-top: 80px; }
-  .incluye-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: var(--masa); border: 1px solid var(--masa); }
-  .incluye-lista li { background: var(--harina); padding: 20px; color: var(--tinta-suave); }
-  .incluye-lista strong { display: block; color: var(--tinta); font: 600 1.15rem/1.2 var(--serif); font-variation-settings: 'opsz' 48; margin-bottom: 6px; }
-
-  /* Frase */
-  .frase { margin-top: 96px; background: var(--guinda); color: var(--harina); overflow: hidden; }
-  .frase-fila { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 28px; padding-top: 64px; padding-bottom: 64px; }
-  .frase h2 { font-size: clamp(2.2rem, 7vw, 4rem); max-width: 10em; }
-  .frase-cuarto { position: absolute; right: -40px; bottom: -40px; width: 180px; height: 180px; background: var(--yema); border-top-left-radius: 100%; opacity: 0.9; }
-  .boton-claro { background: var(--harina); color: var(--tinta); position: relative; }
-  .boton-claro:hover { background: var(--tinta); color: var(--harina); }
-  .frase :focus-visible { outline-color: var(--harina); }
+  /* Cierre */
+  .cierre { margin-top: 112px; margin-bottom: -112px; background: var(--carbon); color: var(--hueso); }
+  .cierre-fila { display: flex; flex-direction: column; gap: 28px; padding-top: 64px; padding-bottom: 64px; }
+  .cierre h2 { font-size: clamp(2.4rem, 8vw, 4.2rem); max-width: 9em; }
+  .cierre-accion { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+  .cierre-accion p { color: var(--piedra); font-size: 1.1rem; }
+  .cierre :focus-visible { outline-color: var(--hueso); }
 
   @media (min-width: 900px) {
-    .portada { grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr); align-items: center; gap: 64px; padding-top: 88px; }
-    .ficha { padding: 28px 28px 22px; }
-    .reparto { padding-top: 112px; }
-    .reparto-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .pasos-lista { grid-template-columns: repeat(3, 1fr); border-top: 0; }
-    .pasos-lista li { grid-template-columns: 1fr; border-top: 1px solid var(--tinta); border-bottom: 0; padding-right: 24px; }
-    .paso-numero { grid-row: auto; font-size: 2.6rem; margin-bottom: 8px; }
+    .portada { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); align-items: center; gap: 56px; padding-top: 80px; }
+    .resultado { padding: 28px; }
+    .reparto { padding-top: 128px; }
+    .leyenda { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pasos-grilla { grid-template-columns: repeat(3, 1fr); }
     .incluye-lista { grid-template-columns: repeat(2, 1fr); }
-    .frase-fila { flex-direction: row; align-items: center; justify-content: space-between; padding-top: 88px; padding-bottom: 88px; }
-    .frase-cuarto { width: 260px; height: 260px; right: -60px; bottom: -60px; }
+    .cierre-fila { flex-direction: row; align-items: flex-end; justify-content: space-between; padding-top: 88px; padding-bottom: 88px; }
+    .cierre-accion { align-items: flex-end; text-align: right; }
   }
 </style>
