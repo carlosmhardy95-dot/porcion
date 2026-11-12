@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base
+  title="Porción: calculá el costo y el precio de tus recetas"
+  description="Calculadora gratis para emprendedores gastronómicos. Sumá ingredientes, gas, packaging y tu tiempo, y sabé a cuánto vender. Sin registro."
+>
+  <section class="contenedor portada">
+    <p class="volanta">Para reposteras, viandas, pizzerías y gastronomía chica</p>
+    <h1>Sabé cuánto cobrar, porción por porción.</h1>
+    <p class="bajada">
+      Cargás tus ingredientes una vez y Porción te dice cuánto te cuesta cada producto y a cuánto venderlo.
+      Gratis, sin registro y desde el celular.
+    </p>
+    <div class="acciones">
+      <a class="boton" href="/calculadora/">Calcular mis precios</a>
+    </div>
+  </section>
+
+  <section class="contenedor pasos" aria-labelledby="como-funciona">
+    <h2 id="como-funciona">Cómo funciona</h2>
+    <ol>
+      <li><strong>Cargá tu receta.</strong> Ingredientes, cuánto pagás y cuánto usás.</li>
+      <li><strong>Sumá lo que no se ve.</strong> Gas, tu tiempo, la caja y los gastos fijos.</li>
+      <li><strong>Mirá tu precio.</strong> Costo por unidad, precio sugerido y cuánto ganás de verdad.</li>
+    </ol>
+  </section>
+</Base>
+
+<style>
+  .portada { display: flex; flex-direction: column; gap: 20px; padding-top: 56px; padding-bottom: 40px; }
+  .portada > * { max-width: 760px; }
+  .volanta { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--suave); }
+  .bajada { font-size: 1.15rem; max-width: 36em; }
+  .acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+  .pasos { display: flex; flex-direction: column; gap: 16px; padding-top: 24px; }
+  .pasos ol { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 10px; max-width: 36em; }
+</style>

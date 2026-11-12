@@ -1,0 +1,88 @@
+/* Tokens de marca de Porción (informe, sección Diseño del producto) */
+:root {
+  --papel: #F6F1E7;
+  --tinta: #1F1B16;
+  --pimenton: #C2412D;
+  --albahaca: #2F6B4F;
+  --manteca: #E8B64C;
+  --manteca-suave: #F4DFA5;
+  --harina: #D9D2C3;
+  --borde: #8C8173;
+  --suave: #6B6257;
+  --carta: #FFFDF8;
+  --linea: #B9AE99;
+
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --ancho: 1080px;
+  --radio: 14px;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+img, svg { max-width: 100%; height: auto; }
+
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2.1rem, 6vw, 3.4rem); letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.5rem, 4vw, 2rem); }
+p { margin: 0; }
+
+a { color: var(--tinta); }
+a:hover { color: var(--pimenton); }
+
+:focus-visible { outline: 3px solid var(--manteca); outline-offset: 2px; }
+
+.contenedor { width: 100%; max-width: var(--ancho); margin: 0 auto; padding: 0 20px; }
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 24px;
+  border-radius: 12px;
+  background: var(--pimenton);
+  color: #FFFFFF;
+  font-weight: 700;
+  text-decoration: none;
+}
+.boton:hover { color: #FFFFFF; background: #A8371F; }
+
+.boton-secundario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 24px;
+  border: 2px solid var(--tinta);
+  border-radius: 12px;
+  color: var(--tinta);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.texto-suave { color: var(--suave); }
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

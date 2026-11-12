@@ -1,0 +1,72 @@
+---
+import '../styles/global.css';
+import { SITE_NAME, INDEXABLE } from '../config.js';
+
+const {
+  title,
+  description,
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const robots = INDEXABLE && !noindex ? 'index, follow' : 'noindex, follow';
+const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
+---
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{fullTitle}</title>
+  <meta name="description" content={description}>
+  <link rel="canonical" href={canonical}>
+  <meta name="robots" content={robots}>
+  <meta name="theme-color" content="#F6F1E7">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="sitemap" href="/sitemap-index.xml">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content={SITE_NAME}>
+  <meta property="og:title" content={fullTitle}>
+  <meta property="og:description" content={description}>
+  <meta property="og:url" content={canonical}>
+  <meta property="og:locale" content="es_AR">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:opsz,wght@9..144,600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+  <slot name="head" />
+</head>
+<body>
+  <a class="solo-lectores" href="#contenido">Ir al contenido</a>
+  <header class="encabezado">
+    <div class="contenedor encabezado-fila">
+      <a href="/" class="marca" aria-label="Porción, inicio">Porción</a>
+      <nav aria-label="Principal">
+        <a href="/calculadora/">Calcular</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <slot />
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor pie-fila">
+      <span class="marca">Porción</span>
+      <p class="texto-suave">Calculadora gratis para emprendedores gastronómicos.</p>
+    </div>
+  </footer>
+</body>
+</html>
+
+<style>
+  .encabezado { border-bottom: 1px solid var(--harina); }
+  .encabezado-fila { display: flex; align-items: center; justify-content: space-between; min-height: 64px; }
+  .marca { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; text-decoration: none; letter-spacing: -0.01em; }
+  nav a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; }
+  main { min-height: 60vh; }
+  .pie { margin-top: 64px; border-top: 1px solid var(--harina); }
+  .pie-fila { display: flex; flex-direction: column; gap: 6px; padding-top: 24px; padding-bottom: 32px; font-size: 0.9rem; }
+</style>

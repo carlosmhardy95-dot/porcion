@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Página no encontrada" description="No encontramos esta página." noindex>
+  <section class="contenedor no-encontrada">
+    <h1>No encontramos esta página</h1>
+    <p>Puede que el enlace esté mal escrito o que la página ya no exista.</p>
+    <div class="acciones">
+      <a class="boton" href="/calculadora/">Ir a la calculadora</a>
+      <a class="boton-secundario" href="/">Volver al inicio</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .no-encontrada { display: flex; flex-direction: column; gap: 16px; padding-top: 56px; }
+  .no-encontrada > * { max-width: 640px; }
+  .acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+</style>
