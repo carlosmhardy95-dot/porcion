@@ -1,0 +1,82 @@
+/* Páginas de contenido (guías). Mismo sistema «Rótulo»: espacio para dividir, números en Chivo. */
+.articulo { max-width: 720px; padding-top: 24px; }
+.migas { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 20px; padding: 0; list-style: none; font-size: 0.9rem; color: var(--carbon-suave); }
+.migas li + li::before { content: '›'; margin-right: 6px; color: var(--borde); }
+.migas a { color: var(--carbon-suave); }
+.articulo-cabecera { display: flex; flex-direction: column; gap: 16px; margin-bottom: 40px; }
+.articulo-cabecera h1 { font-size: clamp(2.2rem, 7vw, 3.6rem); }
+.articulo-bajada { font-size: 1.15rem; color: var(--carbon-suave); }
+.articulo-fecha { font-size: 0.88rem; color: var(--carbon-suave); }
+
+.articulo h2 { font-size: clamp(1.5rem, 4.4vw, 2rem); margin: 56px 0 16px; }
+.articulo h3 { margin: 32px 0 10px; }
+.articulo p { margin: 0 0 16px; }
+.articulo ul, .articulo ol { margin: 0 0 16px; padding-left: 1.3em; }
+.articulo li { margin-bottom: 8px; }
+.articulo li::marker { color: var(--pimenton); font-weight: 700; }
+.articulo strong { font-weight: 700; }
+
+/* Respuesta corta: bloque destacado al inicio */
+.respuesta { margin: 0 0 16px; padding: 20px 22px; background: var(--piedra-clara); border-radius: var(--radio); }
+.respuesta p:last-child { margin-bottom: 0; }
+.respuesta-titulo { font: 800 1.05rem var(--titulo); margin-bottom: 8px !important; }
+
+/* Fórmula */
+.formula-grande { margin: 16px 0 24px; padding: 20px 22px; background: var(--carbon); color: var(--hueso); border-radius: var(--radio); font: 800 clamp(1.05rem, 3.6vw, 1.35rem)/1.4 var(--titulo); letter-spacing: -0.01em; }
+.formula-grande small { display: block; margin-top: 8px; font: 400 0.92rem/1.5 var(--texto); color: var(--piedra); letter-spacing: 0; }
+
+/* Cuentas paso a paso */
+.cuenta { margin: 16px 0 24px; display: grid; gap: 4px; }
+.cuenta div { display: flex; justify-content: space-between; gap: 16px; padding: 10px 14px; background: var(--piedra-clara); border-radius: 2px; }
+.cuenta div:first-child { border-radius: var(--radio) var(--radio) 2px 2px; }
+.cuenta div:last-child { border-radius: 2px 2px var(--radio) var(--radio); }
+.cuenta .cifra { font-weight: 800; white-space: nowrap; }
+.cuenta .total { background: var(--carbon); color: var(--hueso); }
+.cuenta .mal { background: var(--pimenton-claro); color: var(--pimenton-oscuro); font-weight: 700; }
+.cuenta .bien { background: var(--oliva-claro); color: var(--oliva-oscuro); font-weight: 700; }
+
+/* Tabla de ejemplo */
+.tabla-envoltura { overflow-x: auto; margin: 16px 0 8px; }
+.tabla { width: 100%; border-collapse: separate; border-spacing: 0 4px; font-size: 0.95rem; }
+.tabla th { padding: 0 10px 4px; text-align: left; font-size: 0.82rem; font-weight: 600; color: var(--carbon-suave); }
+.tabla td { padding: 10px; background: var(--piedra-clara); }
+.tabla td:first-child { border-radius: 2px 0 0 2px; font-weight: 600; }
+.tabla td:last-child { border-radius: 0 2px 2px 0; }
+.tabla .num { text-align: right; font-family: var(--titulo); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tabla tfoot td { background: var(--carbon); color: var(--hueso); font-weight: 700; }
+.nota-tabla { font-size: 0.88rem; color: var(--carbon-suave); }
+
+/* Resultado del ejemplo */
+.ejemplo-resultado { margin: 16px 0 24px; padding: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: var(--carbon); color: var(--hueso); border-radius: var(--radio); }
+.ejemplo-resultado > div { padding: 12px 14px; background: rgba(244, 240, 232, 0.08); border-radius: 2px; }
+.ejemplo-resultado .principal { grid-column: 1 / -1; background: transparent; }
+.ejemplo-resultado span { display: block; font-size: 0.86rem; color: var(--piedra); }
+.ejemplo-resultado strong { font: 800 1.45rem/1.15 var(--titulo); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.ejemplo-resultado .principal strong { font-size: clamp(2.8rem, 12vw, 3.8rem); font-weight: 900; line-height: 1; letter-spacing: -0.045em; }
+.ejemplo-resultado .positivo { color: var(--oliva-luz); }
+
+/* Llamado a la calculadora */
+.llamado { margin: 48px 0 0; padding: 24px; background: var(--carbon); color: var(--hueso); border-radius: var(--radio); display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.llamado h2 { margin: 0; font-size: clamp(1.5rem, 4.4vw, 2rem); }
+.llamado p { margin: 0; color: var(--piedra); }
+.llamado :focus-visible { outline-color: var(--hueso); }
+
+/* Preguntas frecuentes */
+.preguntas details { margin-bottom: 6px; background: var(--piedra-clara); border-radius: var(--radio); }
+.preguntas summary { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 52px; padding: 12px 16px; font-weight: 700; cursor: pointer; list-style: none; }
+.preguntas summary::-webkit-details-marker { display: none; }
+.preguntas summary::after { content: '+'; font: 800 1.3rem var(--titulo); flex: none; }
+.preguntas details[open] summary::after { content: '−'; }
+.preguntas details > div { padding: 0 16px 4px; }
+
+/* Más guías */
+.relacionadas { margin-top: 56px; display: grid; gap: 6px; }
+.relacionadas a { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 18px; background: var(--piedra-clara); border-radius: var(--radio); font-weight: 700; text-decoration: none; }
+.relacionadas a::after { content: '→'; font-family: var(--titulo); }
+.relacionadas a:hover { background: var(--carbon); color: var(--hueso); }
+
+@media (max-width: 520px) {
+  .tabla { font-size: 0.8rem; border-spacing: 0 3px; }
+  .tabla th { padding: 0 5px 4px; font-size: 0.72rem; }
+  .tabla td { padding: 8px 5px; }
+}

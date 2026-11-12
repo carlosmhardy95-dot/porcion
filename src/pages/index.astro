@@ -58,7 +58,7 @@ const ancho = (v) => `${((v / r.precio) * 100).toFixed(2)}%`;
 
   <section class="contenedor reparto" aria-labelledby="reparto-titulo">
     <h2 id="reparto-titulo">De cada <span class="cifra">{dinero(r.precio)}</span> que cobrás, <span class="cifra ganancia">{dinero(r.ganancia)}</span> son tuyos.</h2>
-    <p class="reparto-bajada">El resto paga lo que no siempre se ve: tu tiempo, los ingredientes, los gastos fijos, la caja, el gas y los impuestos.</p>
+    <p class="reparto-bajada">El resto paga lo que no siempre se ve: tu tiempo, los ingredientes, los gastos fijos, la caja, el gas y los impuestos. <a href="/cuanto-cobrar/">Cómo se calcula el precio</a></p>
     <div class="barra" aria-hidden="true">
       {tramos.map((t) => <span style={`width:${ancho(t.valor)};background:${t.color}`}></span>)}
     </div>

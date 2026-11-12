@@ -27,6 +27,22 @@ export const PLANTILLAS = {
       ['Albahaca (atado)', '1', 'u', '1000', '0.25'],
     ],
   },
+  torta: {
+    etiqueta: 'Torta',
+    receta: { nombre: 'Torta de chocolate con dulce de leche', rinde: '1', horno: '45', minutos: '150', packaging: '2500', ganancia: '30', impuestos: '5', actual: '', competencia: '' },
+    ingredientes: [
+      ['Harina 0000', '1000', 'g', '1200', '250'],
+      ['Azúcar', '1000', 'g', '1500', '250'],
+      ['Huevos', '12', 'u', '3600', '4'],
+      ['Manteca', '200', 'g', '3000', '150'],
+      ['Cacao amargo', '200', 'g', '4500', '60'],
+      ['Leche', '1000', 'ml', '1500', '250'],
+      ['Polvo de hornear', '50', 'g', '900', '10'],
+      ['Dulce de leche', '1000', 'g', '5000', '600'],
+      ['Chocolate cobertura', '1000', 'g', '12000', '200'],
+      ['Crema de leche', '350', 'ml', '3500', '350'],
+    ],
+  },
   lomito: {
     etiqueta: 'Lomito',
     receta: { nombre: 'Lomito completo', rinde: '1', horno: '8', minutos: '12', packaging: '700', ganancia: '30', impuestos: '20', actual: '10000', competencia: '13000' },

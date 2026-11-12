@@ -1,0 +1,101 @@
+---
+import Articulo from '../../layouts/Articulo.astro';
+import EjemploReceta from '../../components/EjemploReceta.astro';
+import { estadoInicial } from '../../lib/almacen.js';
+import { crearDesdePlantilla } from '../../lib/plantillas.js';
+import { calcularReceta, dinero } from '../../lib/calculo.js';
+
+// Números del ejemplo de alfajores, calculados con la calculadora real.
+const { estado, recetaId } = crearDesdePlantilla('alfajores', estadoInicial());
+const insumos = Object.fromEntries(estado.insumos.map((i) => [i.id, i]));
+const r = calcularReceta(estado.recetas.find((x) => x.id === recetaId), insumos, estado.negocio);
+const ingredientesUnidad = r.I / r.R;
+const porTres = ingredientesUnidad * 3;
+---
+<Articulo
+  title="Cuánto cobrar por lo que cocinás: cómo calcular el precio de venta"
+  description="Cómo calcular el precio de venta de tus comidas: qué costos sumar, la fórmula correcta para ganar el porcentaje que querés y los errores más comunes. Con ejemplos."
+  h1="¿Cuánto cobrar por lo que cocinás?"
+  bajada="Cómo calcular el precio de venta de una comida para que cubra todos tus costos y te deje la ganancia que buscás."
+  actualizado="2026-11-12"
+>
+  <div class="respuesta">
+    <p class="respuesta-titulo">La respuesta corta</p>
+    <p>Sumá todo lo que te cuesta hacer una unidad: ingredientes, gas y luz, tu tiempo, la caja y una parte de tus gastos fijos. Después dividí ese costo por lo que te queda una vez descontados tu ganancia y los impuestos.</p>
+  </div>
+
+  <div class="formula-grande">
+    Precio = costo por unidad ÷ (1 − ganancia − impuestos)
+    <small>Con ganancia e impuestos escritos como decimales: 30 % es 0,30 y 5 % es 0,05.</small>
+  </div>
+
+  <p>Para un alfajor que te cuesta {dinero(r.C)}, con 30 % de ganancia y 5 % de impuestos, la cuenta es {dinero(r.C)} ÷ 0,65. Da {dinero(r.C / 0.65)}, que redondeado queda en <strong>{dinero(r.precio)}</strong>.</p>
+
+  <h2>Qué tiene que entrar en el costo</h2>
+  <p>El error más común es contar solo los ingredientes. Lo que te cuesta una unidad tiene cinco partes:</p>
+  <ol>
+    <li><strong>Ingredientes.</strong> Por cada uno: precio del paquete ÷ lo que trae × lo que usás. Si el kilo de harina cuesta $1.200 y usás 100 g, son $120.</li>
+    <li><strong>Gas y luz.</strong> Los minutos de horno o plancha por lo que te cuesta cada minuto. Con garrafa, dividí su precio por los minutos que te dura prendida.</li>
+    <li><strong>Tu tiempo.</strong> Los minutos que te lleva la tanda (preparar, cocinar, armar y limpiar) por el valor de tu hora. Tu trabajo también es un costo.</li>
+    <li><strong>Caja, bolsa o envío.</strong> Todo lo que se va con el producto.</li>
+    <li><strong>Gastos fijos.</strong> Alquiler, servicios, internet: lo que pagás igual todos los meses, dividido por las unidades que vendés en el mes.</li>
+  </ol>
+  <p>Así queda el costo del alfajor de maicena del ejemplo, con precios de muestra:</p>
+  <EjemploReceta clave="alfajores" mostrar="gastos" />
+
+  <h2>Sumarle un 30 % no es ganar un 30 %</h2>
+  <p>Muchos emprendedores calculan el costo y le suman un porcentaje. El problema es que ese porcentaje no es lo que terminás ganando sobre el precio de venta. Mirá la diferencia con un costo de $1.000:</p>
+  <div class="cuenta">
+    <div><span>Costo + 30 % = $1.300. Ganás $300 de $1.300</span><span class="cifra">23 %</span></div>
+    <div class="bien"><span>$1.000 ÷ 0,70 = $1.429. Ganás $429 de $1.429</span><span class="cifra">30 %</span></div>
+  </div>
+  <p>Por eso Porción divide en lugar de sumar: así el porcentaje que elegís es el que realmente te queda de cada venta.</p>
+
+  <h2>La regla de «ingredientes por tres» no alcanza</h2>
+  <p>Es un atajo muy repetido: multiplicar el costo de los ingredientes por tres. Funciona más o menos en productos donde casi todo el costo es materia prima. Pero en productos con mucho trabajo a mano, se queda corto.</p>
+  <div class="cuenta">
+    <div><span>Ingredientes de un alfajor del ejemplo</span><span class="cifra">{dinero(ingredientesUnidad)}</span></div>
+    <div><span>Por tres</span><span class="cifra">{dinero(porTres)}</span></div>
+    <div><span>Costo real (con tiempo, gas, caja y fijos)</span><span class="cifra">{dinero(r.C)}</span></div>
+    <div class="mal"><span>Con ese precio, cada alfajor te deja</span><span class="cifra">{dinero(porTres - r.C)}</span></div>
+  </div>
+  <p>Y eso sin contar impuestos ni comisiones.</p>
+
+  <h2>¿Y el precio de la competencia?</h2>
+  <p>Sirve para comparar, no para empezar. Si arrancás por el precio de otro, no sabés si te cubre los costos: quizás compra más barato, trabaja más rápido o directamente pierde plata. Primero calculá tu precio y después comparalo:</p>
+  <ul>
+    <li><strong>Si tu precio queda más alto,</strong> revisá qué parte del costo pesa más. Muchas veces se puede comprar mejor o hacer tandas más grandes.</li>
+    <li><strong>Si queda más bajo,</strong> quizás estás cobrando menos de lo que el mercado paga por algo como lo tuyo.</li>
+  </ul>
+
+  <h2>Cada cuánto revisar los precios</h2>
+  <p>Cada vez que sube un insumo importante. Si tus precios cambian seguido, conviene tener los ingredientes cargados una sola vez: cuando actualizás uno, se recalculan todas las recetas que lo usan. Porción además te avisa cuando un precio cargado tiene más de 45 días.</p>
+
+  <h2>Ejemplos por producto</h2>
+  <ul>
+    <li><a href="/cuanto-cobrar/torta/">Cuánto cobrar una torta</a></li>
+    <li><a href="/cuanto-cobrar/docena-de-alfajores/">Cuánto cobrar la docena de alfajores</a></li>
+    <li><a href="/calculadora/?ejemplo=pizza">Una pizza muzzarella, en la calculadora</a></li>
+    <li><a href="/calculadora/?ejemplo=lomito">Un lomito completo, en la calculadora</a></li>
+  </ul>
+
+  <h2>Preguntas frecuentes</h2>
+  <div class="preguntas">
+    <details>
+      <summary>¿Tengo que incluir mi sueldo en el costo?</summary>
+      <div><p>Sí. Si no lo incluís, tu ganancia termina pagando tu trabajo y no te queda nada para el negocio. Para sacar el valor de tu hora, dividí lo que querés ganar por mes por las horas que trabajás en el mes.</p></div>
+    </details>
+    <details>
+      <summary>¿Qué porcentaje de ganancia tengo que poner?</summary>
+      <div><p>No hay un número que sirva para todos. Depende de tu rubro, de cuánto vendés y de lo que paga tu clientela. En los ejemplos usamos 30 % para que puedas ver la cuenta, pero lo importante es que el número que elijas sea el que realmente te queda: por eso conviene dividir en lugar de sumar.</p></div>
+    </details>
+    <details>
+      <summary>¿Qué hago si vendo por una app de delivery?</summary>
+      <div><p>Sumá la comisión de la app al porcentaje de impuestos. Por ejemplo, si la app cobra 20 % y pagás 5 % de impuestos, cargá 25 %. Así el precio sugerido ya la tiene en cuenta.</p></div>
+    </details>
+    <details>
+      <summary>¿Y si el precio que me da es más alto de lo que la gente paga?</summary>
+      <div><p>Mirá qué parte del costo pesa más. Si es tu tiempo, quizás convenga hacer tandas más grandes. Si son los ingredientes, comparar proveedores o ajustar la receta. Y si aun así no cierra, ese producto quizás no te conviene venderlo a ese precio.</p></div>
+    </details>
+  </div>
+</Articulo>

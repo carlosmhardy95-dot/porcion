@@ -1,0 +1,77 @@
+---
+import Articulo from '../../layouts/Articulo.astro';
+import EjemploReceta from '../../components/EjemploReceta.astro';
+import { estadoInicial } from '../../lib/almacen.js';
+import { crearDesdePlantilla } from '../../lib/plantillas.js';
+import { calcularReceta, dinero } from '../../lib/calculo.js';
+
+const { estado, recetaId } = crearDesdePlantilla('torta', estadoInicial());
+const insumos = Object.fromEntries(estado.insumos.map((i) => [i.id, i]));
+const receta = estado.recetas.find((x) => x.id === recetaId);
+const r = calcularReceta(receta, insumos, estado.negocio);
+const porciones = 12;
+---
+<Articulo
+  title="Cuánto cobrar una torta casera: cómo calcular su precio"
+  description="Cómo calcular el precio de una torta: ingredientes, horas de trabajo, decoración, caja y ganancia. Con un ejemplo completo y una calculadora gratis."
+  h1="¿Cuánto cobrar una torta?"
+  bajada="No hay un precio único: depende del tamaño, el relleno, la decoración y las horas que te lleva. Lo que sí hay es una forma de calcularlo."
+  migas={[{ nombre: 'Cuánto cobrar', url: '/cuanto-cobrar/' }]}
+  actualizado="2026-11-12"
+  llamado={{ titulo: 'Calculá tu torta', texto: 'Abrí este ejemplo en la calculadora y cambiá los ingredientes y precios por los tuyos.', url: '/calculadora/?ejemplo=torta', boton: 'Abrir el ejemplo' }}
+>
+  <div class="respuesta">
+    <p class="respuesta-titulo">La respuesta corta</p>
+    <p>Calculá lo que te cuesta hacerla: ingredientes, gas, tu tiempo (contando la decoración), la caja y una parte de tus gastos fijos. Después dividí ese costo por 1 menos tu ganancia y tus impuestos. En el ejemplo de abajo, una torta de chocolate que cuesta {dinero(r.C)} se vende a <strong>{dinero(r.precio)}</strong>.</p>
+  </div>
+
+  <h2>Ejemplo: torta de chocolate con dulce de leche</h2>
+  <p>Una torta entera, rellena con dulce de leche y cubierta con ganache. Primero, los ingredientes:</p>
+  <EjemploReceta clave="torta" mostrar="ingredientes" />
+
+  <h3>Lo que no se ve</h3>
+  <p>Una torta lleva mucho más trabajo que ingredientes. En este ejemplo contamos {receta.minutos} minutos entre hornear, rellenar, decorar y limpiar, y una caja con base:</p>
+  <EjemploReceta clave="torta" mostrar="gastos" />
+
+  <h3>El precio</h3>
+  <p>Con 30 % de ganancia y 5 % de impuestos, el precio es {dinero(r.C)} ÷ 0,65, redondeado:</p>
+  <EjemploReceta clave="torta" mostrar="resultado" />
+  <p>Si la vendés por porción, dividí el precio por las porciones que salen. Con {porciones} porciones, cada una debería valer al menos {dinero(r.precio / porciones)}. Si vendés porciones sueltas, sumá el costo de cada envase individual.</p>
+
+  <h2>Qué hace subir el precio de una torta</h2>
+  <ul>
+    <li><strong>Las horas de decoración.</strong> Es lo que más se suele olvidar. Una cobertura simple y una decoración temática pueden llevar horas de diferencia, y esas horas se cobran.</li>
+    <li><strong>El tamaño del molde.</strong> Lo que rinde una torta crece con la superficie, no con el diámetro. Para pasar una receta a otro molde, multiplicá cada ingrediente por (diámetro nuevo ÷ diámetro original)². De 20 a 26 cm, por ejemplo, la receta se multiplica por 1,69.</li>
+    <li><strong>Los rellenos y coberturas.</strong> El chocolate, la crema y las frutas suelen ser lo más caro de la receta. Cargalos con su precio real.</li>
+    <li><strong>Los pisos.</strong> Cada piso suma ingredientes, horas y estructura, como soportes o una base más firme.</li>
+    <li><strong>El envío.</strong> Llevarla al salón o a la casa también es tiempo y transporte.</li>
+  </ul>
+
+  <h2>Errores comunes al cobrar tortas</h2>
+  <ul>
+    <li><strong>Cobrar solo los ingredientes</strong> y regalar las horas de trabajo.</li>
+    <li><strong>Usar el mismo precio para todos los tamaños.</strong> Una torta de 26 cm no lleva un poco más que una de 20: lleva casi un 70 % más.</li>
+    <li><strong>No actualizar.</strong> Si la manteca o el chocolate suben y el precio queda igual, la diferencia sale de tu ganancia.</li>
+  </ul>
+
+  <h2>Preguntas frecuentes</h2>
+  <div class="preguntas">
+    <details>
+      <summary>¿Cobro la decoración aparte?</summary>
+      <div><p>Podés hacerlo: muchas reposteras tienen un precio base por tamaño y suman la decoración según su complejidad. Lo importante es que las horas de decorar estén cobradas en algún lado.</p></div>
+    </details>
+    <details>
+      <summary>¿Cuántas porciones salen de una torta?</summary>
+      <div><p>Depende del tamaño del molde y del tamaño de la porción. Contá cuántas porciones cortás vos habitualmente y usá ese número para el precio por porción.</p></div>
+    </details>
+    <details>
+      <summary>¿Cómo cobro una torta de un tamaño que nunca hice?</summary>
+      <div><p>Escalá la receta con la cuenta del molde (diámetro nuevo ÷ diámetro original, al cuadrado), cargá las nuevas cantidades en la calculadora y sumá el tiempo extra que te va a llevar.</p></div>
+    </details>
+  </div>
+
+  <nav slot="despues" class="relacionadas" aria-label="Más guías">
+    <a href="/cuanto-cobrar/">Cómo calcular el precio de cualquier comida</a>
+    <a href="/cuanto-cobrar/docena-de-alfajores/">Cuánto cobrar la docena de alfajores</a>
+  </nav>
+</Articulo>

@@ -1,0 +1,53 @@
+---
+// Muestra una receta de ejemplo calculada con la calculadora real (mismas fórmulas).
+import { estadoInicial } from '../lib/almacen.js';
+import { crearDesdePlantilla } from '../lib/plantillas.js';
+import { calcularReceta, costoLinea, dinero, cantidad, num } from '../lib/calculo.js';
+import { UNIDADES } from './Campos.jsx';
+
+const { clave, mostrar = 'resultado' } = Astro.props;
+const { estado, recetaId } = crearDesdePlantilla(clave, estadoInicial());
+const receta = estado.recetas.find((r) => r.id === recetaId);
+const insumos = Object.fromEntries(estado.insumos.map((i) => [i.id, i]));
+const r = calcularReceta(receta, insumos, estado.negocio);
+const unidad = Object.fromEntries(UNIDADES);
+const margen = (Math.round((r.ganancia / r.precio) * 1000) / 10).toLocaleString('es-AR');
+const filas = receta.lines.map((l) => {
+  const i = insumos[l.insumoId];
+  return { nombre: i.name, envase: `${cantidad(i.pack)} ${unidad[i.unit]}`, precio: dinero(num(i.price)), usa: `${cantidad(l.used)} ${unidad[i.unit]}`, costo: costoLinea(l, i) };
+});
+---
+{mostrar === 'ingredientes' && (
+  <>
+    <div class="tabla-envoltura">
+      <table class="tabla">
+        <thead><tr><th scope="col">Ingrediente</th><th scope="col" class="num">Envase</th><th scope="col" class="num">Precio</th><th scope="col" class="num">Usás</th><th scope="col" class="num">Costo</th></tr></thead>
+        <tbody>
+          {filas.map((f) => <tr><td>{f.nombre}</td><td class="num">{f.envase}</td><td class="num">{f.precio}</td><td class="num">{f.usa}</td><td class="num">{dinero(f.costo)}</td></tr>)}
+        </tbody>
+        <tfoot><tr><td colspan="4">Ingredientes de la tanda</td><td class="num">{dinero(r.I)}</td></tr></tfoot>
+      </table>
+    </div>
+    <p class="nota-tabla">Precios de muestra: cambialos por los que pagás vos.</p>
+  </>
+)}
+{mostrar === 'gastos' && (
+  <div class="cuenta">
+    <div><span>Ingredientes (tanda de {cantidad(r.R)})</span><span class="cifra">{dinero(r.I)}</span></div>
+    <div><span>Gas y luz: {cantidad(receta.horno)} min de horno × {dinero(num(estado.negocio.costoMin))}</span><span class="cifra">{dinero(r.G)}</span></div>
+    <div><span>Tu tiempo: {cantidad(receta.minutos)} min a {dinero(num(estado.negocio.valorHora))} la hora</span><span class="cifra">{dinero(r.L)}</span></div>
+    {r.R > 1 && <div><span>Dividido {cantidad(r.R)} unidades</span><span class="cifra">{dinero((r.I + r.G + r.L) / r.R)}</span></div>}
+    <div><span>Caja o envío por unidad</span><span class="cifra">{dinero(r.pk)}</span></div>
+    <div><span>Gastos fijos por unidad</span><span class="cifra">{dinero(r.fx)}</span></div>
+    <div class="total"><span>Costo por unidad</span><span class="cifra">{dinero(r.C)}</span></div>
+  </div>
+)}
+{mostrar === 'resultado' && (
+  <div class="ejemplo-resultado">
+    <div class="principal"><span>Precio de venta sugerido{r.R > 1 ? ' por unidad' : ''}</span><strong>{dinero(r.precio)}</strong></div>
+    <div><span>Costo por unidad</span><strong>{dinero(r.C)}</strong></div>
+    <div><span>{r.R > 1 ? `La tanda de ${cantidad(r.R)}` : 'Impuestos y comisiones'}</span><strong>{r.R > 1 ? dinero(r.precio * r.R) : `${cantidad(receta.impuestos)} %`}</strong></div>
+    <div><span>Ganancia real por unidad</span><strong class="positivo">{dinero(r.ganancia)}</strong></div>
+    <div><span>Margen</span><strong>{margen} %</strong></div>
+  </div>
+)}

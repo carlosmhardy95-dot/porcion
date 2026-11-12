@@ -1,0 +1,70 @@
+---
+// Plantilla de las guías: migas de pan, cabecera, contenido y llamado a la calculadora.
+import Base from './Base.astro';
+import '../styles/articulo.css';
+import { SITE_URL } from '../config.js';
+
+const {
+  title,
+  description,
+  h1,
+  bajada,
+  migas = [],
+  actualizado,
+  llamado = { titulo: 'Calculá tu precio en 2 minutos', texto: 'Cargá tus ingredientes y mirá cuánto te cuesta, a cuánto venderlo y cuánto ganás.', url: '/calculadora/', boton: 'Calcular mis costos' },
+} = Astro.props;
+
+const ruta = Astro.url.pathname;
+const fecha = actualizado ? new Date(`${actualizado}T12:00:00`) : null;
+const fechaTexto = fecha?.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const datos = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [{ nombre: 'Inicio', url: '/' }, ...migas, { nombre: h1, url: ruta }].map((m, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: m.nombre,
+      item: new URL(m.url, SITE_URL).href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: h1,
+    description,
+    inLanguage: 'es-AR',
+    dateModified: actualizado,
+    mainEntityOfPage: new URL(ruta, SITE_URL).href,
+    publisher: { '@type': 'Organization', name: 'Porción', url: SITE_URL },
+  },
+];
+---
+<Base title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(datos)} />
+  <article class="contenedor articulo">
+    <nav aria-label="Ubicación">
+      <ol class="migas">
+        <li><a href="/">Inicio</a></li>
+        {migas.map((m) => <li><a href={m.url}>{m.nombre}</a></li>)}
+        <li aria-current="page">{h1}</li>
+      </ol>
+    </nav>
+    <header class="articulo-cabecera">
+      <h1>{h1}</h1>
+      {bajada && <p class="articulo-bajada">{bajada}</p>}
+      {fechaTexto && <p class="articulo-fecha">Actualizado el {fechaTexto}</p>}
+    </header>
+
+    <slot />
+
+    <aside class="llamado" aria-labelledby="llamado-titulo">
+      <h2 id="llamado-titulo">{llamado.titulo}</h2>
+      <p>{llamado.texto}</p>
+      <a class="boton" href={llamado.url}>{llamado.boton}</a>
+    </aside>
+
+    <slot name="despues" />
+  </article>
+</Base>
