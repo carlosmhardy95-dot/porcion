@@ -1,0 +1,75 @@
+---
+import Articulo from '../layouts/Articulo.astro';
+import EjemploReceta from '../components/EjemploReceta.astro';
+import { negocioInicial } from '../lib/almacen.js';
+import { DIAS_PRECIO_VIEJO, REDONDEO, dinero, dinero1, cantidad, num } from '../lib/calculo.js';
+
+const n = negocioInicial();
+---
+<Articulo
+  title="Metodología: cómo calcula Porción el costo y el precio"
+  description="Las fórmulas que usa Porción para calcular el costo por unidad, el precio de venta sugerido, la ganancia real y el margen, explicadas paso a paso."
+  h1="Cómo calcula Porción"
+  bajada="Todas las fórmulas de la calculadora, a la vista. Sin cajas negras: podés repetir cada cuenta a mano."
+  actualizado="2026-11-12"
+>
+  <h2>Costo de cada ingrediente</h2>
+  <div class="formula-grande">Ingrediente = precio del envase ÷ lo que trae el envase × lo que usás</div>
+  <p>El envase y lo que usás se cargan en la misma unidad (gramos, kilos, mililitros, litros o unidades). Si el envase está vacío o en cero, ese ingrediente no suma. La suma de todos es el costo de ingredientes de la tanda.</p>
+
+  <h2>Costo por unidad</h2>
+  <div class="formula-grande">
+    Costo por unidad = (ingredientes + gas y luz + tu tiempo) ÷ unidades de la tanda + caja + gastos fijos por unidad
+  </div>
+  <ul>
+    <li><strong>Gas y luz</strong> = minutos de horno o plancha de la tanda × costo del gas y la luz por minuto.</li>
+    <li><strong>Tu tiempo</strong> = minutos de trabajo de la tanda ÷ 60 × valor de tu hora.</li>
+    <li><strong>Caja</strong> = lo que gastás en caja, bolsa o envío por cada unidad.</li>
+    <li><strong>Gastos fijos por unidad</strong> = gastos fijos del mes ÷ unidades que vendés por mes.</li>
+  </ul>
+  <p>Ingredientes, gas y tiempo se calculan por tanda y se dividen por lo que rinde. La caja y los gastos fijos ya son por unidad. Si la tanda rinde menos de 1, se toma 1.</p>
+
+  <h2>Precio de venta sugerido</h2>
+  <div class="formula-grande">
+    Precio = costo por unidad ÷ (1 − ganancia − impuestos)
+    <small>Redondeado hacia arriba al múltiplo de ${REDONDEO} más cercano.</small>
+  </div>
+  <p>La ganancia y los impuestos (incluidas las comisiones de apps o de cobro) son porcentajes del precio de venta. Por eso se divide en lugar de sumar: si elegís 30 % de ganancia, el 30 % del precio es tuyo. Si ganancia más impuestos superan el 95 %, la calculadora no muestra un precio y te pide revisarlos.</p>
+  <p>El redondeo hacia arriba hace que el precio sea fácil de cobrar y que tu ganancia real quede igual o un poco por encima de la que elegiste, nunca por debajo.</p>
+
+  <h2>Ganancia real y margen</h2>
+  <div class="formula-grande">
+    Ganancia real = precio × (1 − impuestos) − costo por unidad
+    <small>Margen = ganancia real ÷ precio.</small>
+  </div>
+  <p>Es lo que te queda de cada venta después de pagar todos los costos y los impuestos. Si cargás tu precio de hoy, la calculadora hace la misma cuenta con ese precio y te muestra si ganás o perdés.</p>
+
+  <h2>Ejemplo completo</h2>
+  <p>Alfajores de maicena, tanda de 12, con 30 % de ganancia y 5 % de impuestos:</p>
+  <EjemploReceta clave="alfajores" mostrar="gastos" />
+  <EjemploReceta clave="alfajores" mostrar="resultado" />
+
+  <h2>Valores de ejemplo</h2>
+  <p>La primera vez, la calculadora viene con estos valores para que veas cómo funciona. Son ejemplos: cambialos por los tuyos en «Ajustes de tu negocio».</p>
+  <div class="cuenta">
+    <div><span>Valor de tu hora</span><span class="cifra">{dinero(num(n.valorHora))}</span></div>
+    <div><span>Gas y luz por minuto</span><span class="cifra">{dinero1(num(n.costoMin))}</span></div>
+    <div><span>Gastos fijos del mes</span><span class="cifra">{dinero(num(n.fijosMes))}</span></div>
+    <div><span>Unidades que vendés por mes</span><span class="cifra">{cantidad(n.unidadesMes)}</span></div>
+  </div>
+
+  <h2>Avisos</h2>
+  <ul>
+    <li><strong>Precio viejo:</strong> cuando el precio de un ingrediente no se actualiza hace más de {DIAS_PRECIO_VIEJO} días, la calculadora lo marca.</li>
+    <li><strong>Ingrediente compartido:</strong> si un ingrediente está en varias recetas y cambiás su precio, se actualizan todas.</li>
+    <li><strong>Precio de hoy y competencia:</strong> son solo para comparar. No cambian el precio sugerido.</li>
+  </ul>
+
+  <h2>Lo que la calculadora no hace</h2>
+  <ul>
+    <li><strong>No descuenta mermas sola.</strong> Si pelás o limpiás un ingrediente, cargá en «Usás» la cantidad antes de limpiar.</li>
+    <li><strong>No discrimina el IVA.</strong> Cargá los precios que pagás y sumá en impuestos lo que te descuentan al vender.</li>
+    <li><strong>No conoce los precios de tu zona.</strong> Los precios de los ejemplos son de muestra: el resultado es tan bueno como los datos que cargás.</li>
+  </ul>
+  <p>Tus datos se guardan solo en tu dispositivo. Más detalles en <a href="/privacidad/">privacidad</a>.</p>
+</Articulo>

@@ -1,0 +1,79 @@
+---
+import Articulo from '../layouts/Articulo.astro';
+import EjemploReceta from '../components/EjemploReceta.astro';
+---
+<Articulo
+  title="Cómo calcular el costo de una receta, paso a paso"
+  description="Guía paso a paso para calcular el costo de una receta: costo de cada ingrediente, unidades, mermas, rendimiento real y gastos que no son ingredientes. Con ejemplo."
+  h1="Cómo calcular el costo de una receta"
+  bajada="Seis pasos para saber cuánto te cuesta de verdad cada cosa que cocinás, ingrediente por ingrediente."
+  actualizado="2026-11-12"
+>
+  <div class="respuesta">
+    <p class="respuesta-titulo">La respuesta corta</p>
+    <p>Por cada ingrediente: precio del envase ÷ lo que trae × lo que usás. Sumá todos, agregá el gas, tu tiempo, la caja y los gastos fijos, y dividí por las unidades que realmente salen de la tanda.</p>
+  </div>
+
+  <h2>1. Anotá la receta con cantidades exactas</h2>
+  <p>Pesá y medí cada ingrediente al menos una vez. «Una taza» o «a ojo» no sirven para costear: un error chico en un ingrediente caro cambia todo el resultado. Hacé la cuenta sobre la tanda entera, no sobre una unidad: es más precisa y después dividís.</p>
+
+  <h2>2. Calculá cuánto te cuesta cada ingrediente</h2>
+  <p>La cuenta es siempre la misma:</p>
+  <div class="formula-grande">
+    Costo = precio del envase ÷ lo que trae × lo que usás
+    <small>El envase y lo que usás tienen que estar en la misma unidad.</small>
+  </div>
+  <p>Si el kilo de harina cuesta $1.200 y usás 100 g: $1.200 ÷ 1.000 g × 100 g = <strong>$120</strong>.</p>
+  <p>Cuidado con las unidades. Pasá todo a la unidad más chica antes de dividir:</p>
+  <ul>
+    <li>1 kg = 1.000 g y 1 l = 1.000 ml.</li>
+    <li>Una docena de huevos son 12 unidades. Si usás 2, el costo es el precio de la docena ÷ 12 × 2.</li>
+    <li>Un paquete de manteca de 200 g se carga como 200 g, no como «1 paquete», si en la receta la medís en gramos.</li>
+  </ul>
+
+  <h2>3. Tené en cuenta lo que se pierde</h2>
+  <p>Cáscaras, huesos, recortes, lo que queda pegado en el bol: eso también lo pagaste. Para no subestimar el costo, calculá sobre lo que compraste, no sobre lo que queda.</p>
+  <p>Si para tener 800 g de papas peladas necesitás 1 kg sin pelar, cargá 1.000 g en lo que usás. En la calculadora de Porción hacelo así: en «Usás» poné la cantidad antes de pelar o limpiar.</p>
+
+  <h2>4. Sumá los ingredientes</h2>
+  <p>La suma es el costo de los ingredientes de la tanda. Este es el ejemplo de alfajores de maicena, con precios de muestra:</p>
+  <EjemploReceta clave="alfajores" mostrar="ingredientes" />
+  <p>No te olvides de lo que se usa de a poco: sal, esencia de vainilla, aceite para el molde, papel manteca. Si no querés cargarlos uno por uno, sumá una línea «varios» con un monto aproximado por tanda.</p>
+
+  <h2>5. Sumá lo que no es ingrediente</h2>
+  <p>El costo de una receta no termina en los ingredientes. Faltan el gas y la luz del horno, tu tiempo de trabajo, la caja o el envío y una parte de tus gastos fijos. Para el mismo ejemplo:</p>
+  <EjemploReceta clave="alfajores" mostrar="gastos" />
+  <p>Cómo sacar cada uno lo explicamos en <a href="/cuanto-cobrar/">cuánto cobrar por lo que cocinás</a>.</p>
+
+  <h2>6. Dividí por lo que rinde de verdad</h2>
+  <p>Contá las unidades que realmente vendés, no las que dice la receta. Si de una tanda de 12 se rompen 2 tapas o te quedás uno para probar, rinde 10. Dividir por 12 en lugar de 10 hace que cada unidad parezca más barata de lo que es.</p>
+
+  <h2>Errores comunes</h2>
+  <ul>
+    <li><strong>Usar precios viejos.</strong> Si un ingrediente subió y no lo actualizaste, el costo está mal. Porción te avisa cuando un precio tiene más de 45 días.</li>
+    <li><strong>Mezclar unidades.</strong> Un envase en kilos y un uso en gramos sin convertir multiplica el error por mil.</li>
+    <li><strong>Olvidar los ingredientes chicos</strong> y lo que se pierde al limpiar o porcionar.</li>
+    <li><strong>Calcular una sola vez.</strong> El costo cambia cada vez que cambian los precios o la receta.</li>
+  </ul>
+
+  <h2>Preguntas frecuentes</h2>
+  <div class="preguntas">
+    <details>
+      <summary>¿Cargo el precio con o sin IVA?</summary>
+      <div><p>Cargá lo que realmente pagás, el monto del ticket o la factura. Ese es tu costo.</p></div>
+    </details>
+    <details>
+      <summary>¿Qué hago si compro por mayor?</summary>
+      <div><p>Usá el precio y el tamaño del envase que comprás. Si comprás una bolsa de 25 kg, el envase es 25.000 g y el precio, lo que pagaste por la bolsa.</p></div>
+    </details>
+    <details>
+      <summary>¿Tengo que hacer esto a mano?</summary>
+      <div><p>No. Podés usar la <a href="/calculadora/">calculadora</a>, que hace todas las cuentas y guarda tus ingredientes para usarlos en otras recetas, o la <a href="/planilla-de-costos/">planilla de Excel</a> si preferís trabajar en una hoja de cálculo.</p></div>
+    </details>
+  </div>
+
+  <nav slot="despues" class="relacionadas" aria-label="Más guías">
+    <a href="/cuanto-cobrar/">Cuánto cobrar por lo que cocinás</a>
+    <a href="/planilla-de-costos/">Planilla de costos gratis (Excel)</a>
+  </nav>
+</Articulo>

@@ -1,0 +1,58 @@
+---
+import { statSync } from 'node:fs';
+import { join } from 'node:path';
+import Articulo from '../layouts/Articulo.astro';
+
+const ARCHIVO = '/descargas/planilla-costos-porcion.xlsx';
+let peso = '';
+try {
+  peso = `${Math.max(1, Math.round(statSync(join(process.cwd(), 'public', 'descargas', 'planilla-costos-porcion.xlsx')).size / 1024))} KB`;
+} catch {
+  peso = '';
+}
+---
+<Articulo
+  title="Planilla de costos gratis para tus recetas (Excel)"
+  description="Descargá gratis una planilla de Excel para calcular el costo de tus recetas, el precio de venta y tu ganancia real. Sin registro y sin dejar tu email."
+  h1="Planilla de costos gratis para tus recetas"
+  bajada="Un Excel listo para usar: cargás tus ingredientes y te dice cuánto te cuesta cada producto, a cuánto venderlo y cuánto ganás."
+  actualizado="2026-11-12"
+  llamado={{ titulo: '¿Preferís no usar Excel?', texto: 'La calculadora hace las mismas cuentas desde el celular, guarda varias recetas y arma tu lista de precios.', url: '/calculadora/', boton: 'Usar la calculadora' }}
+>
+  <div class="respuesta">
+    <p class="respuesta-titulo">Descarga directa</p>
+    <p>Gratis, sin registro y sin dejar tu email. Se abre con Excel, Google Sheets o LibreOffice.</p>
+    <p><a class="boton" href={ARCHIVO} download>Descargar planilla (.xlsx{peso ? `, ${peso}` : ''})</a></p>
+  </div>
+
+  <h2>Qué tiene la planilla</h2>
+  <ul>
+    <li><strong>Cómo usar:</strong> las instrucciones y las fórmulas, a la vista.</li>
+    <li><strong>Negocio:</strong> el valor de tu hora, el gas y la luz por minuto, tus gastos fijos y las unidades que vendés por mes. Se cargan una vez.</li>
+    <li><strong>Receta:</strong> hasta 15 ingredientes, los minutos de horno y de trabajo, la caja, tu ganancia y los impuestos. Abajo, el resultado: costo por unidad, costo de la tanda, precio sugerido, ganancia real y margen.</li>
+  </ul>
+  <p>Viene con un ejemplo de alfajores de maicena con precios de muestra, para que veas cómo se completa. Las celdas blancas con borde son las que cargás vos; las grises se calculan solas.</p>
+
+  <h2>Cómo usarla</h2>
+  <ol>
+    <li>Descargala y abrila. En Google Sheets: subila a tu Drive y abrila con Hojas de cálculo de Google.</li>
+    <li>En la hoja «Negocio», reemplazá los valores de ejemplo por los tuyos.</li>
+    <li>En la hoja «Receta», cargá tu producto, cuántas unidades rinde y cada ingrediente. El envase y lo que usás van en la misma unidad.</li>
+    <li>Completá los minutos de horno, los minutos de trabajo, la caja, tu ganancia y los impuestos.</li>
+    <li>Para otro producto, duplicá la hoja «Receta».</li>
+  </ol>
+
+  <h2>Las mismas cuentas que la calculadora</h2>
+  <p>La planilla usa exactamente las fórmulas de la <a href="/calculadora/">calculadora de Porción</a>. Con el ejemplo de alfajores, las dos dan el mismo resultado: costo por unidad de $1.357 y precio sugerido de $2.100. Si querés entender cada fórmula, están explicadas en la <a href="/metodologia/">metodología</a>.</p>
+
+  <h2>¿Planilla o calculadora?</h2>
+  <ul>
+    <li><strong>La planilla</strong> te conviene si ya trabajás en Excel o querés modificar las cuentas a tu manera.</li>
+    <li><strong>La calculadora</strong> te conviene si querés usarla desde el celular, tener varias recetas que comparten ingredientes (cambiás un precio y se actualizan todas), que te avise cuando un precio quedó viejo o armar tu lista de precios para WhatsApp.</li>
+  </ul>
+
+  <nav slot="despues" class="relacionadas" aria-label="Más guías">
+    <a href="/como-calcular-el-costo-de-una-receta/">Cómo calcular el costo de una receta</a>
+    <a href="/cuanto-cobrar/">Cuánto cobrar por lo que cocinás</a>
+  </nav>
+</Articulo>

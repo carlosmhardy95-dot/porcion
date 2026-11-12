@@ -5,7 +5,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const EXCLUIR = [/^marca\//, /^sw\.js$/, /\.map$/, /^sitemap/, /^robots\.txt$/, /^_headers$/, /^_redirects$/, /^404\.html$/];
+const EXCLUIR = [/^marca\//, /^descargas\//, /^sw\.js$/, /\.map$/, /^sitemap/, /^robots\.txt$/, /^_headers$/, /^_redirects$/, /^404\.html$/];
 
 async function listar(raiz, carpeta = '') {
   const entradas = await readdir(path.join(raiz, carpeta), { withFileTypes: true });
