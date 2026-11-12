@@ -1,0 +1,83 @@
+---
+import Articulo from '../../layouts/Articulo.astro';
+import EjemploReceta from '../../components/EjemploReceta.astro';
+import { estadoInicial } from '../../lib/almacen.js';
+import { crearDesdePlantilla } from '../../lib/plantillas.js';
+import { calcularReceta, costoLinea, dinero, num } from '../../lib/calculo.js';
+
+const { estado, recetaId } = crearDesdePlantilla('pizza', estadoInicial());
+const insumos = Object.fromEntries(estado.insumos.map((i) => [i.id, i]));
+const receta = estado.recetas.find((x) => x.id === recetaId);
+const r = calcularReceta(receta, insumos, estado.negocio);
+const costo = (nombre) => {
+  const l = receta.lines.find((x) => insumos[x.insumoId].name === nombre);
+  return costoLinea(l, insumos[l.insumoId]);
+};
+const muzza = costo('Muzzarella');
+const partMuzza = Math.round((muzza / r.I) * 100);
+const partCaja = Math.round((r.pk / r.C) * 100);
+const app = num(receta.impuestos);
+const directa = calcularReceta({ ...receta, impuestos: '5' }, insumos, estado.negocio);
+const porciones = 8;
+---
+<Articulo
+  title="Cuánto cobrar una pizza: cómo calcular su costo y su precio"
+  description="Cómo calcular el costo de una pizza y su precio de venta: masa, salsa, muzzarella, caja, horno, tu tiempo y la comisión de las apps de delivery. Con ejemplo."
+  h1="¿Cuánto cobrar una pizza?"
+  bajada="La muzzarella, la caja y la comisión de la app pesan más de lo que parece. Así se calcula el precio de cada pizza."
+  migas={[{ nombre: 'Cuánto cobrar', url: '/cuanto-cobrar/' }]}
+  actualizado="2026-11-12"
+  llamado={{ titulo: 'Calculá tus pizzas', texto: 'Abrí este ejemplo en la calculadora y duplicalo para cada gusto de tu carta.', url: '/calculadora/?ejemplo=pizza', boton: 'Abrir el ejemplo' }}
+>
+  <div class="respuesta">
+    <p class="respuesta-titulo">La respuesta corta</p>
+    <p>Pesá lo que lleva cada pizza, calculá el costo de la masa y la cubierta, y sumá la caja, el horno, tu tiempo y una parte de los gastos fijos. En el ejemplo, una muzzarella grande cuesta {dinero(r.C)} y, vendida por una app de delivery, el precio sugerido es <strong>{dinero(r.precio)}</strong>.</p>
+  </div>
+
+  <h2>Ejemplo: pizza muzzarella grande</h2>
+  <EjemploReceta clave="pizza" mostrar="ingredientes" />
+  <p>La muzzarella sola es {dinero(muzza)}: el {partMuzza} % de los ingredientes. Por eso conviene pesarla en cada pizza. Si un día se va la mano, el costo sube y el precio no.</p>
+
+  <h3>Lo que no es ingrediente</h3>
+  <EjemploReceta clave="pizza" mostrar="gastos" />
+  <p>La caja es el {partCaja} % del costo. Si cambiás de proveedor de cajas, actualizalo también.</p>
+
+  <h3>El precio</h3>
+  <p>El ejemplo tiene {app} % en impuestos y comisiones, pensado para vender por una app de delivery:</p>
+  <EjemploReceta clave="pizza" mostrar="resultado" />
+
+  <h2>El mismo precio no sirve para todos los canales</h2>
+  <p>La comisión de la app es un costo más. Con la misma pizza y la misma ganancia del 30 %, el precio cambia según por dónde la vendés:</p>
+  <div class="cuenta">
+    <div><span>Por app de delivery ({app} % entre comisión e impuestos)</span><span class="cifra">{dinero(r.precio)}</span></div>
+    <div><span>Venta directa (5 % de impuestos)</span><span class="cifra">{dinero(directa.precio)}</span></div>
+  </div>
+  <p>Si cobrás lo mismo en los dos canales, en uno de los dos estás ganando menos de lo que pensás. Si querés un solo precio, calculalo con la comisión más alta.</p>
+
+  <h2>Cada gusto tiene su costo</h2>
+  <p>Una napolitana, una fugazzeta o una de jamón y morrones llevan otros ingredientes y otras cantidades. Calculá cada gusto por separado: en la calculadora, duplicá la receta de la muzzarella y cambiá lo que lleva arriba. La masa, la caja y el tiempo suelen ser iguales; lo que cambia es la cubierta.</p>
+
+  <h2>Pizza por porción</h2>
+  <p>Si vendés porciones, dividí el precio de la pizza por las que cortás. Con {porciones} porciones, cada una debería valer al menos {dinero(r.precio / porciones)}. Si no se venden todas, sumá ese desperdicio: dividí por las porciones que realmente vendés.</p>
+
+  <h2>Preguntas frecuentes</h2>
+  <div class="preguntas">
+    <details>
+      <summary>¿Cobro el envío aparte?</summary>
+      <div><p>Es lo más claro, porque el envío se paga por pedido y no por pizza. Si lo incluís en el precio, dividí el costo de cada viaje por las pizzas que llevás en promedio y sumalo a la caja.</p></div>
+    </details>
+    <details>
+      <summary>¿Cómo calculo el costo de la masa si hago bollos para muchas pizzas?</summary>
+      <div><p>Calculá la receta de masa entera, dividila por los bollos que salen y cargá en cada pizza la parte que le corresponde. En el ejemplo ya está hecho: la harina, la levadura y el aceite son lo que usa una pizza.</p></div>
+    </details>
+    <details>
+      <summary>¿Qué pasa con el gas del horno si hago varias pizzas a la vez?</summary>
+      <div><p>Si el horno está prendido una hora y salen veinte pizzas, el gas de esa hora se reparte entre las veinte. Cargá en cada pizza los minutos que le tocan.</p></div>
+    </details>
+  </div>
+
+  <nav slot="despues" class="relacionadas" aria-label="Más guías">
+    <a href="/cuanto-cobrar/">Cómo calcular el precio de cualquier comida</a>
+    <a href="/cuanto-cobrar/vianda/">Cuánto cobrar una vianda</a>
+  </nav>
+</Articulo>

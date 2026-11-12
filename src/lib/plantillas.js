@@ -43,6 +43,19 @@ export const PLANTILLAS = {
       ['Crema de leche', '350', 'ml', '3500', '350'],
     ],
   },
+  vianda: {
+    etiqueta: 'Vianda',
+    receta: { nombre: 'Vianda de milanesa con puré', rinde: '10', horno: '40', minutos: '120', packaging: '350', ganancia: '30', impuestos: '5', actual: '', competencia: '' },
+    ingredientes: [
+      ['Carne para milanesa', '1000', 'g', '14000', '1500'],
+      ['Pan rallado', '1000', 'g', '3000', '300'],
+      ['Huevos', '12', 'u', '3600', '4'],
+      ['Papa (sin pelar)', '1000', 'g', '1500', '2500'],
+      ['Manteca', '200', 'g', '3000', '100'],
+      ['Leche', '1000', 'ml', '1500', '300'],
+      ['Aceite de girasol', '1500', 'ml', '5000', '300'],
+    ],
+  },
   lomito: {
     etiqueta: 'Lomito',
     receta: { nombre: 'Lomito completo', rinde: '1', horno: '8', minutos: '12', packaging: '700', ganancia: '30', impuestos: '20', actual: '10000', competencia: '13000' },

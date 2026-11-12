@@ -1,0 +1,93 @@
+---
+import Articulo from '../../layouts/Articulo.astro';
+import EjemploReceta from '../../components/EjemploReceta.astro';
+import { estadoInicial } from '../../lib/almacen.js';
+import { crearDesdePlantilla } from '../../lib/plantillas.js';
+import { calcularReceta, costoLinea, dinero, num, cantidad } from '../../lib/calculo.js';
+
+const { estado, recetaId } = crearDesdePlantilla('vianda', estadoInicial());
+const insumos = Object.fromEntries(estado.insumos.map((i) => [i.id, i]));
+const receta = estado.recetas.find((x) => x.id === recetaId);
+const r = calcularReceta(receta, insumos, estado.negocio);
+const t = num(receta.impuestos) / 100;
+const carne = receta.lines.find((l) => insumos[l.insumoId].name === 'Carne para milanesa');
+const costoCarne = costoLinea(carne, insumos[carne.insumoId]);
+const pesoCarne = num(carne.used) / r.R;
+const partCarne = Math.round((costoCarne / r.I) * 100);
+// Plan semanal de 5 viandas
+const semana = r.precio * 5;
+const costoSemana = r.C * 5;
+const gananciaSemana = semana * (1 - t) - costoSemana;
+const conDescuento = semana * 0.9;
+const gananciaDescuento = conDescuento * (1 - t) - costoSemana;
+const minimoSemana = costoSemana / (1 - t);
+---
+<Articulo
+  title="Cuánto cobrar una vianda: cómo calcular el precio de tus viandas"
+  description="Cómo calcular el precio de una vianda casera: ingredientes, porciones, bandeja, envío, tu tiempo y planes semanales con descuento. Con un ejemplo completo."
+  h1="¿Cuánto cobrar una vianda?"
+  bajada="Cocinar por tandas abarata cada vianda, pero solo si las porciones son parejas y contás todo: la bandeja, el envío y tu tiempo."
+  migas={[{ nombre: 'Cuánto cobrar', url: '/cuanto-cobrar/' }]}
+  actualizado="2026-11-12"
+  llamado={{ titulo: 'Calculá tus viandas', texto: 'Abrí este ejemplo en la calculadora y cambiá el menú, las cantidades y los precios por los tuyos.', url: '/calculadora/?ejemplo=vianda', boton: 'Abrir el ejemplo' }}
+>
+  <div class="respuesta">
+    <p class="respuesta-titulo">La respuesta corta</p>
+    <p>Calculá la tanda completa, ingredientes, gas, tu tiempo, y dividila por las viandas que salen. Sumá la bandeja y una parte de tus gastos fijos, y dividí por 1 menos tu ganancia e impuestos. En el ejemplo, una vianda de milanesa con puré cuesta {dinero(r.C)} y se vende a <strong>{dinero(r.precio)}</strong>.</p>
+  </div>
+
+  <h2>Ejemplo: milanesa con puré, tanda de {r.R} viandas</h2>
+  <p>Los ingredientes de toda la tanda, con precios de muestra:</p>
+  <EjemploReceta clave="vianda" mostrar="ingredientes" />
+  <p>La papa está cargada <strong>sin pelar</strong>: lo que tirás en cáscaras también lo pagaste. Y fijate el peso de la carne: en el ejemplo, {dinero(costoCarne)} de los {dinero(r.I)} de ingredientes son carne, un {partCarne} %.</p>
+
+  <h3>De la tanda a cada vianda</h3>
+  <EjemploReceta clave="vianda" mostrar="gastos" />
+
+  <h3>El precio</h3>
+  <EjemploReceta clave="vianda" mostrar="resultado" />
+
+  <h2>Las porciones tienen que ser parejas</h2>
+  <p>El precio se calcula suponiendo que todas las viandas llevan lo mismo. En el ejemplo son {cantidad(pesoCarne)} g de carne cruda por vianda. Si un día servís más «a ojo», esa vianda te cuesta más y la diferencia sale de tu ganancia. Pesá al menos el ingrediente más caro de cada porción.</p>
+
+  <h2>Bandeja y envío</h2>
+  <ul>
+    <li><strong>La bandeja, la tapa y la bolsa</strong> van en la caja por unidad, porque cada vianda lleva las suyas.</li>
+    <li><strong>El envío</strong> suele cobrarse por pedido, no por vianda. Si lo incluís en el precio, dividí lo que te cuesta cada viaje por las viandas que llevás en promedio y sumalo a la caja por unidad.</li>
+    <li><strong>Si vendés por una app de delivery,</strong> sumá su comisión al porcentaje de impuestos. Con la misma vianda, el precio en la app tiene que ser más alto que el de venta directa.</li>
+  </ul>
+
+  <h2>Planes semanales con descuento</h2>
+  <p>Vender la semana completa por adelantado te asegura ventas y te deja planificar las compras. El descuento tiene que salir de tu ganancia sin comerte los costos. Con el ejemplo, para 5 viandas:</p>
+  <div class="cuenta">
+    <div><span>5 viandas a precio sugerido</span><span class="cifra">{dinero(semana)}</span></div>
+    <div><span>Te dejan</span><span class="cifra">{dinero(gananciaSemana)}</span></div>
+    <div><span>Con 10 % de descuento</span><span class="cifra">{dinero(conDescuento)}</span></div>
+    <div><span>Te dejan</span><span class="cifra">{dinero(gananciaDescuento)}</span></div>
+    <div class="mal"><span>Por debajo de esto, perdés plata</span><span class="cifra">{dinero(minimoSemana)}</span></div>
+  </div>
+
+  <h2>Un menú, un precio</h2>
+  <p>Cada plato del menú tiene su costo. Una vianda de pollo con arroz y una de milanesa con puré no cuestan lo mismo, y cobrarlas igual hace que unas te dejen plata y otras no. En la calculadora podés duplicar la receta y cambiar los ingredientes para tener el precio de cada plato.</p>
+
+  <h2>Preguntas frecuentes</h2>
+  <div class="preguntas">
+    <details>
+      <summary>¿Puedo cobrar todas las viandas al mismo precio?</summary>
+      <div><p>Podés, si usás como precio el del plato más caro del menú o un promedio que te cierre en la semana. Lo importante es saber cuánto te deja cada uno, para no vender de más lo que menos te conviene.</p></div>
+    </details>
+    <details>
+      <summary>¿Cómo cuento el tiempo si cocino varios platos a la vez?</summary>
+      <div><p>Repartí las horas de la jornada entre los platos según cuánto trabajo lleva cada uno. Si cocinás dos menús en la misma mañana, no cargues la mañana completa en cada uno.</p></div>
+    </details>
+    <details>
+      <summary>¿Qué hago con las viandas que no se venden?</summary>
+      <div><p>Si sobran con frecuencia, contalas como pérdida: dividí el costo de la tanda por las viandas que realmente vendés, no por las que cocinás.</p></div>
+    </details>
+  </div>
+
+  <nav slot="despues" class="relacionadas" aria-label="Más guías">
+    <a href="/cuanto-cobrar/">Cómo calcular el precio de cualquier comida</a>
+    <a href="/como-calcular-el-costo-de-una-receta/">Cómo calcular el costo de una receta</a>
+  </nav>
+</Articulo>
