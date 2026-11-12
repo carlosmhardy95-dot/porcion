@@ -115,3 +115,4 @@
 .pc-texto-whatsapp { margin: 0; padding: 14px; background: var(--carta); border: 1px dashed var(--linea); border-radius: 12px; font: 400 14px/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
 .pc-aviso-flotante { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); max-width: calc(100% - 32px); padding: 12px 18px; background: var(--tinta); color: var(--papel); border-radius: 12px; font: 700 15px var(--sans); z-index: 20; }
 .pc-copia { padding-top: 20px; border-top: 1px dashed var(--linea); }
+.pc-instalar { display: flex; flex-direction: column; gap: 8px; margin-top: 24px; border-color: var(--pimenton); }

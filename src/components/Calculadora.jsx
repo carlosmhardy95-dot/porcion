@@ -6,6 +6,7 @@ import EditorReceta from './EditorReceta.jsx';
 import MisRecetas from './MisRecetas.jsx';
 import Despensa from './Despensa.jsx';
 import ListaPrecios from './ListaPrecios.jsx';
+import Instalar from './Instalar.jsx';
 
 const CAMPOS_QUE_ACTUALIZAN_PRECIO = ['price', 'pack', 'unit'];
 
@@ -169,6 +170,8 @@ export default function Calculadora() {
       {vista === 'lista' && (
         <ListaPrecios estado={estado} insumosPorId={insumosPorId} acciones={acciones} />
       )}
+
+      <Instalar />
 
       <p className="pc-pie">
         {guardado

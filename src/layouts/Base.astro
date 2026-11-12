@@ -23,6 +23,17 @@ const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
   <meta name="robots" content={robots}>
   <meta name="theme-color" content="#F6F1E7">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/iconos/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="Porción">
+  <script is:inline>
+    // Guarda el aviso de "instalar app" del navegador para mostrar nuestro propio botón.
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      window.porcionInstalar = e;
+      window.dispatchEvent(new Event('porcion-instalable'));
+    });
+  </script>
   <link rel="sitemap" href="/sitemap-index.xml">
 
   <meta property="og:type" content="website">
@@ -58,6 +69,14 @@ const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
       <p class="texto-suave">Calculadora gratis para emprendedores gastronómicos.</p>
     </div>
   </footer>
+  <script>
+    // Registra el service worker (solo en el sitio publicado) para que funcione sin internet.
+    if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>
 

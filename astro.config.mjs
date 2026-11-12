@@ -3,6 +3,7 @@ import { defineConfig, passthroughImageService } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import { SITE_URL } from './src/config.js';
+import pwa from './pwa/integracion.mjs';
 
 // Usamos Astro 6: no depende de los módulos nativos nuevos de Astro 7,
 // que Windows (Control de aplicaciones) bloquea en la compu de desarrollo.
@@ -17,5 +18,7 @@ export default defineConfig({
     sitemap({
       filter: (page) => !page.includes('/app/'),
     }),
+    // Arma dist/sw.js para que la app funcione sin internet.
+    pwa(),
   ],
 });
