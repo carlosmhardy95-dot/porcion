@@ -16,6 +16,7 @@ const UNIDADES = ['g', 'kg', 'ml', 'l', 'u'];
 const TEMAS = ['papel', 'tinta'];
 const PRECIOS = ['sugerido', 'actual'];
 const MODOS = ['unidad', 'paquete', 'tanda'];
+const SI_NO = ['si', 'no'];
 
 function esObjeto(v) {
   return v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -96,6 +97,8 @@ function sanearReceta(r, insumosValidos) {
     rinde: numeroTexto(r.rinde, '1'),
     paquete: numeroTexto(r.paquete, '1'),
     cajaPaquete: numeroTexto(r.cajaPaquete, '0'),
+    conExtras: opcion(r.conExtras, SI_NO, 'si'),
+    conImpuestos: opcion(r.conImpuestos, SI_NO, parseFloat(String(r.impuestos ?? '').replace(',', '.')) > 0 ? 'si' : 'no'),
     horno: numeroTexto(r.horno, '0'),
     minutos: numeroTexto(r.minutos, '0'),
     packaging: numeroTexto(r.packaging, '0'),

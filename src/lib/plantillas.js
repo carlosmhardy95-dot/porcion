@@ -4,7 +4,7 @@ import { nuevoId, normalizar } from './almacen.js';
 export const PLANTILLAS = {
   alfajores: {
     etiqueta: 'Alfajores',
-    receta: { nombre: 'Alfajores de maicena', rinde: '12', paquete: '12', cajaPaquete: '0', horno: '25', minutos: '90', packaging: '150', ganancia: '30', impuestos: '5', actual: '10800', competencia: '24000' },
+    receta: { nombre: 'Alfajores de maicena', conExtras: 'si', conImpuestos: 'si', rinde: '12', paquete: '12', cajaPaquete: '0', horno: '25', minutos: '90', packaging: '150', ganancia: '30', impuestos: '5', actual: '10800', competencia: '24000' },
     ingredientes: [
       ['Maicena', '500', 'g', '1800', '150'],
       ['Harina 0000', '1000', 'g', '1200', '100'],
@@ -17,7 +17,7 @@ export const PLANTILLAS = {
   },
   pizza: {
     etiqueta: 'Pizza',
-    receta: { nombre: 'Pizza muzzarella grande', rinde: '1', horno: '10', minutos: '15', packaging: '900', ganancia: '30', impuestos: '20', actual: '9000', competencia: '12000' },
+    receta: { nombre: 'Pizza muzzarella grande', conExtras: 'si', conImpuestos: 'si', rinde: '1', horno: '10', minutos: '15', packaging: '900', ganancia: '30', impuestos: '20', actual: '9000', competencia: '12000' },
     ingredientes: [
       ['Harina 0000', '1000', 'g', '1200', '300'],
       ['Levadura fresca', '50', 'g', '800', '10'],
@@ -29,7 +29,7 @@ export const PLANTILLAS = {
   },
   torta: {
     etiqueta: 'Torta',
-    receta: { nombre: 'Torta de chocolate con dulce de leche', rinde: '1', horno: '45', minutos: '150', packaging: '2500', ganancia: '30', impuestos: '5', actual: '', competencia: '' },
+    receta: { nombre: 'Torta de chocolate con dulce de leche', conExtras: 'si', conImpuestos: 'si', rinde: '1', horno: '45', minutos: '150', packaging: '2500', ganancia: '30', impuestos: '5', actual: '', competencia: '' },
     ingredientes: [
       ['Harina 0000', '1000', 'g', '1200', '250'],
       ['Azúcar', '1000', 'g', '1500', '250'],
@@ -45,7 +45,7 @@ export const PLANTILLAS = {
   },
   vianda: {
     etiqueta: 'Vianda',
-    receta: { nombre: 'Vianda de milanesa con puré', rinde: '10', horno: '40', minutos: '120', packaging: '350', ganancia: '30', impuestos: '5', actual: '', competencia: '' },
+    receta: { nombre: 'Vianda de milanesa con puré', conExtras: 'si', conImpuestos: 'si', rinde: '10', horno: '40', minutos: '120', packaging: '350', ganancia: '30', impuestos: '5', actual: '', competencia: '' },
     ingredientes: [
       ['Carne para milanesa', '1000', 'g', '14000', '1500'],
       ['Pan rallado', '1000', 'g', '3000', '300'],
@@ -58,7 +58,7 @@ export const PLANTILLAS = {
   },
   lomito: {
     etiqueta: 'Lomito',
-    receta: { nombre: 'Lomito completo', rinde: '1', horno: '8', minutos: '12', packaging: '700', ganancia: '30', impuestos: '20', actual: '10000', competencia: '13000' },
+    receta: { nombre: 'Lomito completo', conExtras: 'si', conImpuestos: 'si', rinde: '1', horno: '8', minutos: '12', packaging: '700', ganancia: '30', impuestos: '20', actual: '10000', competencia: '13000' },
     ingredientes: [
       ['Pan de lomo', '6', 'u', '3000', '1'],
       ['Lomo', '1000', 'g', '16000', '180'],
@@ -78,6 +78,8 @@ export function recetaVacia() {
     rinde: '1',
     paquete: '1',
     cajaPaquete: '0',
+    conExtras: 'no',
+    conImpuestos: 'no',
     horno: '0',
     minutos: '0',
     packaging: '0',

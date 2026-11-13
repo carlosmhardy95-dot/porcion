@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { calcularReceta, diasDesde, dinero, dinero1, cantidad, num, etiquetaVenta, DIAS_PRECIO_VIEJO } from '../lib/calculo.js';
+import { calcularReceta, conExtras, conImpuestos, diasDesde, dinero, dinero1, cantidad, num, etiquetaVenta, DIAS_PRECIO_VIEJO } from '../lib/calculo.js';
 import { CampoNumero, SelectorUnidad, Ayudante } from './Campos.jsx';
 
 function IconoCruz() {
@@ -19,6 +19,8 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
   const disponibles = estado.insumos.filter((i) => !enReceta.has(i.id) && i.name.trim() !== '');
   const porUnidad = (total) => (r.R === 1 ? ' por unidad.' : ` por tanda (${dinero(total / r.R)} por unidad).`);
   const venta = etiquetaVenta(r.N);
+  const extras = conExtras(receta);
+  const impuestos = conImpuestos(receta);
   const porPaquete = r.N > 1;
   const OPCIONES_VENTA = [['1', 'Por unidad'], ['12', 'Por docena'], ['6', 'Media docena']];
   const otraCantidad = !OPCIONES_VENTA.some(([v]) => Number(v) === r.N);
@@ -145,89 +147,110 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
 
       <section className="pc-seccion">
         <h2>Lo que también pagás</h2>
-        <p className="pc-suave">Tres preguntas rápidas. Debajo de cada una ves cuánto suma.</p>
+        <label className="pc-interruptor">
+          <input type="checkbox" role="switch" checked={extras} onChange={(e) => acciones.cambiarReceta('conExtras', e.target.checked ? 'si' : 'no')} />
+          <span>Sumar gas, tu tiempo, caja y gastos fijos</span>
+        </label>
+        {!extras && (
+          <p className="pc-chico">Es opcional. Ahora el precio sale solo de los ingredientes y no cubre tu tiempo, el gas ni la caja. Activalo cuando quieras afinarlo.</p>
+        )}
+        {extras && (
+          <>
+          <p className="pc-suave">Tres preguntas rápidas. Debajo de cada una ves cuánto suma.</p>
 
-        <div className="pc-pregunta">
-          <label htmlFor="pc-horno">¿Cuántos minutos de horno o plancha lleva la tanda?</label>
-          <div className="pc-fila-pregunta">
-            <input id="pc-horno" type="number" inputMode="decimal" step="any" min="0" value={receta.horno} onChange={(e) => acciones.cambiarReceta('horno', e.target.value)} />
-            <span>minutos</span>
-          </div>
-          <p className="pc-impacto">{cantidad(receta.horno)} min × {dinero1(num(negocio.costoMin))} por minuto = {dinero(r.G)}{porUnidad(r.G)}</p>
-          <Ayudante
-            id="gas"
-            titulo="¿Cómo saco el gas por minuto?"
-            descripcion="Con garrafa: dividí su precio por los minutos que te dura con el horno o la plancha prendidos. Con gas natural o eléctrico, usá esta cuenta como referencia aproximada."
-            etiquetaA="Precio de la garrafa ($)"
-            etiquetaB="Horas que te dura prendida"
-            calcular={(precio, horas) => (horas > 0 ? precio / (horas * 60) : 0)}
-            texto={(v) => `Te sale ${dinero1(v)} por minuto.`}
-            aplicar={(v) => acciones.cambiarNegocio('costoMin', String(Math.round(v * 10) / 10))}
-          />
-        </div>
-
-        <div className="pc-pregunta">
-          <label htmlFor="pc-minutos">¿Cuántos minutos te lleva hacer la tanda?</label>
-          <p className="pc-chico">Contá preparar, cocinar, armar y limpiar.</p>
-          <div className="pc-fila-pregunta">
-            <input id="pc-minutos" type="number" inputMode="decimal" step="any" min="0" value={receta.minutos} onChange={(e) => acciones.cambiarReceta('minutos', e.target.value)} />
-            <span>minutos</span>
-          </div>
-          <p className="pc-impacto">{cantidad(receta.minutos)} min a {dinero(num(negocio.valorHora))} la hora = {dinero(r.L)}{porUnidad(r.L)}</p>
-          <Ayudante
-            id="hora"
-            titulo="¿Cómo saco el valor de mi hora?"
-            descripcion="Dividí lo que querés ganar por mes por las horas que trabajás en el mes."
-            etiquetaA="Lo que querés ganar por mes ($)"
-            etiquetaB="Horas que trabajás por mes"
-            calcular={(sueldo, horas) => (horas > 0 ? sueldo / horas : 0)}
-            texto={(v) => `Tu hora vale ${dinero(v)}.`}
-            aplicar={(v) => acciones.cambiarNegocio('valorHora', String(Math.round(v)))}
-          />
-        </div>
-
-        <div className="pc-pregunta">
-          <label htmlFor="pc-caja">{porPaquete ? '¿Cuánto gastás en envoltorio o bolsita por cada unidad?' : '¿Cuánto gastás en caja, bolsa o envío por unidad?'}</label>
-          <div className="pc-fila-pregunta">
-            <span>$</span>
-            <input id="pc-caja" type="number" inputMode="decimal" step="any" min="0" value={receta.packaging} onChange={(e) => acciones.cambiarReceta('packaging', e.target.value)} />
-          </div>
-          {porPaquete && <p className="pc-chico">Si no va envuelta cada una, dejalo en 0.</p>}
-        </div>
-
-        {porPaquete && (
           <div className="pc-pregunta">
-            <label htmlFor="pc-caja-paquete">¿Cuánto cuesta la caja o bolsa de la {venta}?</label>
+            <label htmlFor="pc-horno">¿Cuántos minutos de horno o plancha lleva la tanda?</label>
+            <div className="pc-fila-pregunta">
+              <input id="pc-horno" type="number" inputMode="decimal" step="any" min="0" value={receta.horno} onChange={(e) => acciones.cambiarReceta('horno', e.target.value)} />
+              <span>minutos</span>
+            </div>
+            <p className="pc-impacto">{cantidad(receta.horno)} min × {dinero1(num(negocio.costoMin))} por minuto = {dinero(r.G)}{porUnidad(r.G)}</p>
+            <Ayudante
+              id="gas"
+              titulo="¿Cómo saco el gas por minuto?"
+              descripcion="Con garrafa: dividí su precio por los minutos que te dura con el horno o la plancha prendidos. Con gas natural o eléctrico, usá esta cuenta como referencia aproximada."
+              etiquetaA="Precio de la garrafa ($)"
+              etiquetaB="Horas que te dura prendida"
+              calcular={(precio, horas) => (horas > 0 ? precio / (horas * 60) : 0)}
+              texto={(v) => `Te sale ${dinero1(v)} por minuto.`}
+              aplicar={(v) => acciones.cambiarNegocio('costoMin', String(Math.round(v * 10) / 10))}
+            />
+          </div>
+
+          <div className="pc-pregunta">
+            <label htmlFor="pc-minutos">¿Cuántos minutos te lleva hacer la tanda?</label>
+            <p className="pc-chico">Contá preparar, cocinar, armar y limpiar.</p>
+            <div className="pc-fila-pregunta">
+              <input id="pc-minutos" type="number" inputMode="decimal" step="any" min="0" value={receta.minutos} onChange={(e) => acciones.cambiarReceta('minutos', e.target.value)} />
+              <span>minutos</span>
+            </div>
+            <p className="pc-impacto">{cantidad(receta.minutos)} min a {dinero(num(negocio.valorHora))} la hora = {dinero(r.L)}{porUnidad(r.L)}</p>
+            <Ayudante
+              id="hora"
+              titulo="¿Cómo saco el valor de mi hora?"
+              descripcion="Dividí lo que querés ganar por mes por las horas que trabajás en el mes."
+              etiquetaA="Lo que querés ganar por mes ($)"
+              etiquetaB="Horas que trabajás por mes"
+              calcular={(sueldo, horas) => (horas > 0 ? sueldo / horas : 0)}
+              texto={(v) => `Tu hora vale ${dinero(v)}.`}
+              aplicar={(v) => acciones.cambiarNegocio('valorHora', String(Math.round(v)))}
+            />
+          </div>
+
+          <div className="pc-pregunta">
+            <label htmlFor="pc-caja">{porPaquete ? '¿Cuánto gastás en envoltorio o bolsita por cada unidad?' : '¿Cuánto gastás en caja, bolsa o envío por unidad?'}</label>
             <div className="pc-fila-pregunta">
               <span>$</span>
-              <input id="pc-caja-paquete" type="number" inputMode="decimal" step="any" min="0" value={receta.cajaPaquete ?? '0'} onChange={(e) => acciones.cambiarReceta('cajaPaquete', e.target.value)} />
+              <input id="pc-caja" type="number" inputMode="decimal" step="any" min="0" value={receta.packaging} onChange={(e) => acciones.cambiarReceta('packaging', e.target.value)} />
             </div>
+            {porPaquete && <p className="pc-chico">Si no va envuelta cada una, dejalo en 0.</p>}
           </div>
-        )}
 
-        <details className="pc-ajustes">
-          <summary>Ajustes de tu negocio</summary>
-          <div className="pc-ajustes-cuerpo">
-            <p className="pc-chico">Se usan en todas tus recetas. Los valores que vienen cargados son ejemplos: cambialos por los tuyos.</p>
-            <div className="pc-grilla2">
-              <CampoNumero id="pc-valor-hora" etiqueta="Valor de tu hora ($)" valor={negocio.valorHora} onCambio={(v) => acciones.cambiarNegocio('valorHora', v)} />
-              <CampoNumero id="pc-costo-min" etiqueta="Gas y luz por minuto ($)" valor={negocio.costoMin} onCambio={(v) => acciones.cambiarNegocio('costoMin', v)} />
-              <CampoNumero id="pc-fijos" etiqueta="Gastos fijos del mes ($)" valor={negocio.fijosMes} onCambio={(v) => acciones.cambiarNegocio('fijosMes', v)} />
-              <CampoNumero id="pc-unidades" etiqueta="Unidades que vendés por mes" valor={negocio.unidadesMes} min="1" onCambio={(v) => acciones.cambiarNegocio('unidadesMes', v)} />
+          {porPaquete && (
+            <div className="pc-pregunta">
+              <label htmlFor="pc-caja-paquete">¿Cuánto cuesta la caja o bolsa de la {venta}?</label>
+              <div className="pc-fila-pregunta">
+                <span>$</span>
+                <input id="pc-caja-paquete" type="number" inputMode="decimal" step="any" min="0" value={receta.cajaPaquete ?? '0'} onChange={(e) => acciones.cambiarReceta('cajaPaquete', e.target.value)} />
+              </div>
             </div>
-            <p className="pc-chico">Gastos fijos: alquiler, servicios, internet y sueldos que pagás igual todos los meses.</p>
-            <p className="pc-impacto">{dinero(num(negocio.fijosMes))} ÷ {cantidad(Math.max(1, num(negocio.unidadesMes)))} unidades = {dinero(r.fx)} por unidad.</p>
-          </div>
-        </details>
+          )}
+
+          <details className="pc-ajustes">
+            <summary>Ajustes de tu negocio</summary>
+            <div className="pc-ajustes-cuerpo">
+              <p className="pc-chico">Se usan en todas tus recetas. Los valores que vienen cargados son ejemplos: cambialos por los tuyos.</p>
+              <div className="pc-grilla2">
+                <CampoNumero id="pc-valor-hora" etiqueta="Valor de tu hora ($)" valor={negocio.valorHora} onCambio={(v) => acciones.cambiarNegocio('valorHora', v)} />
+                <CampoNumero id="pc-costo-min" etiqueta="Gas y luz por minuto ($)" valor={negocio.costoMin} onCambio={(v) => acciones.cambiarNegocio('costoMin', v)} />
+                <CampoNumero id="pc-fijos" etiqueta="Gastos fijos del mes ($)" valor={negocio.fijosMes} onCambio={(v) => acciones.cambiarNegocio('fijosMes', v)} />
+                <CampoNumero id="pc-unidades" etiqueta="Unidades que vendés por mes" valor={negocio.unidadesMes} min="1" onCambio={(v) => acciones.cambiarNegocio('unidadesMes', v)} />
+              </div>
+              <p className="pc-chico">Gastos fijos: alquiler, servicios, internet y sueldos que pagás igual todos los meses.</p>
+              <p className="pc-impacto">{dinero(num(negocio.fijosMes))} ÷ {cantidad(Math.max(1, num(negocio.unidadesMes)))} unidades = {dinero(r.fx)} por unidad.</p>
+            </div>
+          </details>
+          </>
+        )}
       </section>
 
       <section className="pc-seccion">
         <h2>Tu ganancia</h2>
         <div className="pc-grilla2">
           <CampoNumero id="pc-ganancia" etiqueta="Ganancia que querés (%)" valor={receta.ganancia} onCambio={(v) => acciones.cambiarReceta('ganancia', v)} />
-          <CampoNumero id="pc-impuestos" etiqueta="Impuestos y comisiones (%)" valor={receta.impuestos} onCambio={(v) => acciones.cambiarReceta('impuestos', v)} />
         </div>
-        <p className="pc-chico">Si vendés por una app de delivery, sumá su comisión en impuestos y comisiones.</p>
+        <label className="pc-interruptor">
+          <input type="checkbox" role="switch" checked={impuestos} onChange={(e) => acciones.cambiarReceta('conImpuestos', e.target.checked ? 'si' : 'no')} />
+          <span>Pago impuestos o comisiones</span>
+        </label>
+        {impuestos && (
+          <>
+            <div className="pc-grilla2">
+              <CampoNumero id="pc-impuestos" etiqueta="Impuestos y comisiones (%)" valor={receta.impuestos} onCambio={(v) => acciones.cambiarReceta('impuestos', v)} />
+            </div>
+            <p className="pc-chico">Si vendés por una app de delivery, sumá su comisión acá.</p>
+          </>
+        )}
       </section>
 
       <section className="pc-seccion pc-seccion-resultado" aria-labelledby="pc-resultado-titulo">
@@ -274,7 +297,7 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
           {r.invalido && <p className="pc-mensaje pc-mal">La ganancia más los impuestos tienen que sumar menos de 95 %.</p>}
           <div className="pc-desglose">
             <p className="pc-desglose-titulo">Qué pesa más en tu costo</p>
-            {r.partes.map((p, i) => (
+            {r.partes.filter((p) => p.valor > 0).map((p, i) => (
               <div key={p.clave} className="pc-parte">
                 <div className="pc-parte-fila"><span>{p.etiqueta}</span><span className="pc-mono">{dinero(p.valor)} · {Math.round(p.porcentaje)} %</span></div>
                 <div className={i === 0 ? 'pc-barra pc-barra-primera' : 'pc-barra'}>

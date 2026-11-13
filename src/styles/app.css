@@ -82,6 +82,27 @@
 .pc-app .pc-rinde input { width: 96px; }
 .pc-rinde span { color: var(--carbon-suave); }
 .pc-venta { display: flex; flex-direction: column; gap: 8px; }
+
+/* Interruptor (opciones de la receta) */
+.pc-app label.pc-interruptor { display: flex; align-items: center; gap: 12px; min-height: 44px; font: 700 1rem var(--texto); color: var(--carbon); cursor: pointer; }
+.pc-app .pc-interruptor input {
+  flex: none;
+  appearance: none;
+  width: 48px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--piedra);
+  position: relative;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.pc-app .pc-interruptor input::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--blanco); box-shadow: 0 1px 2px rgba(41, 38, 41, 0.3); transition: transform 120ms ease; }
+.pc-app .pc-interruptor input:checked { background: var(--carbon); }
+.pc-app .pc-interruptor input:checked::after { transform: translateX(20px); }
+.pc-app .pc-interruptor input:hover { border: 0; }
+.pc-app .pc-interruptor input:focus-visible { outline: 3px solid var(--carbon); outline-offset: 2px; box-shadow: none; }
 .pc-venta-titulo { font-weight: 700; }
 .pc-venta .pc-fila-pregunta input { width: 110px; }
 

@@ -31,6 +31,18 @@ export function etiquetaVenta(n, { mayuscula = false } = {}) {
   return mayuscula ? t.charAt(0).toUpperCase() + t.slice(1) : t;
 }
 
+// Opciones de la receta. Sin valor guardado: gastos prendidos (como siempre) e impuestos
+// prendidos solo si hay un porcentaje cargado.
+export function conExtras(receta) {
+  return receta.conExtras !== 'no';
+}
+
+export function conImpuestos(receta) {
+  if (receta.conImpuestos === 'no') return false;
+  if (receta.conImpuestos === 'si') return true;
+  return num(receta.impuestos) > 0;
+}
+
 export function gastosFijosPorUnidad(negocio) {
   return num(negocio.fijosMes) / Math.max(1, num(negocio.unidadesMes));
 }
@@ -39,14 +51,17 @@ export function calcularReceta(receta, insumosPorId, negocio, redondeo = REDONDE
   const R = Math.max(1, num(receta.rinde));
   const lineas = receta.lines.map((l) => ({ id: l.id, costo: costoLinea(l, insumosPorId[l.insumoId]) }));
   const I = lineas.reduce((suma, l) => suma + l.costo, 0);
-  const G = num(receta.horno) * num(negocio.costoMin);
-  const L = (num(receta.minutos) / 60) * num(negocio.valorHora);
-  const pk = num(receta.packaging);
-  const fx = gastosFijosPorUnidad(negocio);
+  // «Lo que también pagás» es opcional: si la receta lo tiene apagado, no se suman
+  // gas, tiempo, caja ni gastos fijos. Las recetas sin la opción guardada lo tienen prendido.
+  const extras = conExtras(receta);
+  const G = extras ? num(receta.horno) * num(negocio.costoMin) : 0;
+  const L = extras ? (num(receta.minutos) / 60) * num(negocio.valorHora) : 0;
+  const pk = extras ? num(receta.packaging) : 0;
+  const fx = extras ? gastosFijosPorUnidad(negocio) : 0;
   const C = (I + G + L) / R + pk + fx;
 
   const g = num(receta.ganancia) / 100;
-  const t = num(receta.impuestos) / 100;
+  const t = conImpuestos(receta) ? num(receta.impuestos) / 100 : 0;
   const denominador = 1 - g - t;
   const invalido = denominador < 0.05;
   const precio = invalido ? 0 : redondearArriba(C / denominador, redondeo);
@@ -55,7 +70,7 @@ export function calcularReceta(receta, insumosPorId, negocio, redondeo = REDONDE
   // Venta por paquete (docena, media docena…): el costo es el de N unidades más la caja del paquete,
   // y el precio se redondea sobre el paquete. Con N = 1 da lo mismo que por unidad.
   const N = unidadesPorVenta(receta);
-  const cajaPaquete = N > 1 ? num(receta.cajaPaquete) : 0;
+  const cajaPaquete = N > 1 && extras ? num(receta.cajaPaquete) : 0;
   const Cp = C * N + cajaPaquete;
   const precioPaquete = invalido ? 0 : redondearArriba(Cp / denominador, redondeo);
   const gananciaPaquete = precioPaquete * (1 - t) - Cp;

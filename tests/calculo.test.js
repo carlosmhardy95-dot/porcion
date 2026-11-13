@@ -82,3 +82,19 @@ test('venta por docena: costo, precio redondeado sobre la docena y caja del paqu
   assert.equal(porUnidad.precioPaquete, porUnidad.precio);
   assert.equal(porUnidad.cajaPaquete, 0);
 });
+
+test('gastos e impuestos opcionales', () => {
+  const { receta, insumos } = alfajores();
+  const base = calcularReceta(receta, insumos, negocio);
+  const sinExtras = calcularReceta({ ...receta, conExtras: 'no' }, insumos, negocio);
+  assert.equal(Math.round(sinExtras.C * 100) / 100, Math.round((base.I / 12) * 100) / 100, 'solo ingredientes');
+  assert.equal(sinExtras.G + sinExtras.L + sinExtras.pk + sinExtras.fx, 0);
+  const sinImpuestos = calcularReceta({ ...receta, conImpuestos: 'no' }, insumos, negocio);
+  assert.equal(sinImpuestos.precio, Math.ceil(base.C / 0.7 / 50 - 1e-9) * 50);
+  const conSi = calcularReceta({ ...receta, conExtras: 'si', conImpuestos: 'si' }, insumos, negocio);
+  assert.equal(conSi.precio, base.precio, 'prendidos = como antes');
+  const sinDato = calcularReceta({ ...receta, impuestos: '0' }, insumos, negocio);
+  assert.equal(sinDato.precio, Math.ceil(base.C / 0.7 / 50 - 1e-9) * 50);
+  const docenaSinExtras = calcularReceta({ ...receta, paquete: '12', cajaPaquete: '1200', conExtras: 'no' }, insumos, negocio);
+  assert.equal(docenaSinExtras.cajaPaquete, 0, 'la caja de la docena es parte de los gastos opcionales');
+});
