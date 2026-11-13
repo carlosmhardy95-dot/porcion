@@ -53,3 +53,32 @@ test('ganancia más impuestos de 95 % o más marca el cálculo como inválido', 
   assert.equal(r.invalido, true);
   assert.equal(r.precio, 0);
 });
+
+test('el redondeo no suma $50 de más cuando la cuenta da justo un múltiplo', async () => {
+  const { calcularReceta } = await import('../src/lib/calculo.js');
+  const insumos = { a: { id: 'a', pack: '1', price: '6105' } };
+  const receta = { rinde: '1', horno: '0', minutos: '0', packaging: '0', ganancia: '30', impuestos: '5', actual: '', competencia: '', lines: [{ id: 'l', insumoId: 'a', used: '1' }] };
+  const negocio = { valorHora: '0', costoMin: '0', fijosMes: '120000', unidadesMes: '600' };
+  const r = calcularReceta(receta, insumos, negocio);
+  assert.equal(r.C, 6305);
+  assert.equal(r.precio, 9700);
+  const r2 = calcularReceta({ ...receta, lines: [{ id: 'l', insumoId: 'a', used: '1.001' }] }, insumos, negocio);
+  assert.equal(r2.precio, 9750, 'si pasa apenas del múltiplo, sí redondea hacia arriba');
+});
+
+test('venta por docena: costo, precio redondeado sobre la docena y caja del paquete', () => {
+  const { receta, insumos } = alfajores();
+  const r = calcularReceta({ ...receta, paquete: '12', cajaPaquete: '0', actual: '10800' }, insumos, negocio);
+  assert.equal(r.N, 12);
+  assert.equal(Math.round(r.Cp), 16280);
+  assert.equal(r.precioPaquete, 25050);
+  assert.equal(Math.round(r.gananciaPaquete), 7518);
+  assert.equal(Math.round(r.gananciaActual), -6020);
+  assert.equal(r.precio, 2100, 'el precio por unidad no cambia');
+  const conCaja = calcularReceta({ ...receta, paquete: '12', cajaPaquete: '1200' }, insumos, negocio);
+  assert.equal(Math.round(conCaja.Cp), 17480);
+  const porUnidad = calcularReceta(receta, insumos, negocio);
+  assert.equal(porUnidad.N, 1);
+  assert.equal(porUnidad.precioPaquete, porUnidad.precio);
+  assert.equal(porUnidad.cajaPaquete, 0);
+});

@@ -37,6 +37,13 @@ const n = negocioInicial();
   <p>La ganancia y los impuestos (incluidas las comisiones de apps o de cobro) son porcentajes del precio de venta. Por eso se divide en lugar de sumar: si elegís 30 % de ganancia, el 30 % del precio es tuyo. Si ganancia más impuestos superan el 95 %, la calculadora no muestra un precio y te pide revisarlos.</p>
   <p>El redondeo hacia arriba hace que el precio sea fácil de cobrar y que tu ganancia real quede igual o un poco por encima de la que elegiste, nunca por debajo.</p>
 
+  <h2>Venta por docena o por paquete</h2>
+  <div class="formula-grande">
+    Costo del paquete = costo por unidad × unidades del paquete + caja del paquete
+    <small>Precio del paquete = costo del paquete ÷ (1 − ganancia − impuestos), redondeado hacia arriba de a ${REDONDEO}.</small>
+  </div>
+  <p>Si elegís vender por docena, media docena u otra cantidad, el precio se calcula para el paquete completo y se redondea una sola vez, sobre el paquete. La caja del paquete se suma una vez; el envoltorio de cada unidad va en «caja por unidad». En ese caso, tu precio de hoy y el de tu competencia también se cargan por paquete.</p>
+
   <h2>Ganancia real y margen</h2>
   <div class="formula-grande">
     Ganancia real = precio × (1 − impuestos) − costo por unidad
@@ -45,7 +52,7 @@ const n = negocioInicial();
   <p>Es lo que te queda de cada venta después de pagar todos los costos y los impuestos. Si cargás tu precio de hoy, la calculadora hace la misma cuenta con ese precio y te muestra si ganás o perdés.</p>
 
   <h2>Ejemplo completo</h2>
-  <p>Alfajores de maicena, tanda de 12, con 30 % de ganancia y 5 % de impuestos:</p>
+  <p>Alfajores de maicena, tanda de 12, vendidos por docena, con 30 % de ganancia y 5 % de impuestos:</p>
   <EjemploReceta clave="alfajores" mostrar="gastos" />
   <EjemploReceta clave="alfajores" mostrar="resultado" />
 

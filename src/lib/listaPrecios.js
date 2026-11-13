@@ -1,5 +1,5 @@
 // Arma los datos de la lista de precios y la dibuja como imagen para historias (1080 × 1920).
-import { calcularReceta, dinero } from './calculo.js';
+import { calcularReceta, dinero, etiquetaVenta, redondearArriba, REDONDEO } from './calculo.js';
 import { LOGOTIPO } from './logotipo.js';
 
 export const TEMAS = {
@@ -18,22 +18,33 @@ export function fechaLista(fecha = new Date()) {
   return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
+// Modo por defecto al sumar un producto a la lista: como se vende (paquete), si no por unidad.
+export function modoInicial(r) {
+  return r.N > 1 ? 'paquete' : 'unidad';
+}
+
 // Devuelve los productos elegidos con su precio listo para mostrar.
+// «Mi precio de hoy» está cargado en la forma en que se vende (por unidad o por paquete).
 export function itemsDeLista(estado, insumosPorId) {
   const { lista } = estado;
+  const usarActual = lista.precio === 'actual';
   return lista.items
     .map((item) => {
       const receta = estado.recetas.find((r) => r.id === item.recetaId);
       if (!receta) return null;
       const r = calcularReceta(receta, insumosPorId, estado.negocio);
-      const base = lista.precio === 'actual' && r.actual > 0 ? r.actual : r.precio;
-      const porTanda = item.modo === 'tanda' && r.R > 1;
-      return {
-        recetaId: receta.id,
-        nombre: receta.nombre || 'Sin nombre',
-        detalle: porTanda ? etiquetaTanda(r.R) : 'Por unidad',
-        precio: porTanda ? base * r.R : base,
-      };
+      const actualUnidad = r.actual > 0 ? (r.N > 1 ? redondearArriba(r.actual / r.N, REDONDEO) : r.actual) : 0;
+      const unidad = usarActual && actualUnidad > 0 ? actualUnidad : r.precio;
+      let detalle = 'Por unidad';
+      let precio = unidad;
+      if (item.modo === 'paquete' && r.N > 1) {
+        detalle = etiquetaVenta(r.N, { mayuscula: true });
+        precio = usarActual && r.actual > 0 ? r.actual : r.precioPaquete;
+      } else if (item.modo === 'tanda' && r.R > 1) {
+        detalle = etiquetaTanda(r.R);
+        precio = unidad * r.R;
+      }
+      return { recetaId: receta.id, nombre: receta.nombre || 'Sin nombre', detalle, precio };
     })
     .filter((i) => i && i.precio > 0);
 }

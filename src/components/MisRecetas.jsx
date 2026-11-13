@@ -1,4 +1,4 @@
-import { calcularReceta, dinero } from '../lib/calculo.js';
+import { calcularReceta, dinero, etiquetaVenta } from '../lib/calculo.js';
 import { PLANTILLAS } from '../lib/plantillas.js';
 import CopiaSeguridad from './CopiaSeguridad.jsx';
 
@@ -34,11 +34,11 @@ export default function MisRecetas({ estado, insumosPorId, acciones }) {
             <article key={receta.id} className="pc-tarjeta pc-receta">
               <h3>{receta.nombre || 'Sin nombre'}</h3>
               <div className="pc-receta-numeros">
-                <div><span className="pc-chico">Te cuesta</span><span className="pc-numero">{dinero(r.C)}</span></div>
-                <div><span className="pc-chico">Precio sugerido</span><span className="pc-numero">{r.invalido ? '—' : dinero(r.precio)}</span></div>
+                <div><span className="pc-chico">Te cuesta {r.N > 1 ? `la ${etiquetaVenta(r.N)}` : 'cada uno'}</span><span className="pc-numero">{dinero(r.Cp)}</span></div>
+                <div><span className="pc-chico">Precio sugerido{r.N > 1 ? ` por ${etiquetaVenta(r.N)}` : ''}</span><span className="pc-numero">{r.invalido ? '—' : dinero(r.precioPaquete)}</span></div>
               </div>
               {r.gananciaActual !== null && r.gananciaActual < 0 && (
-                <p className="pc-mensaje pc-mal">Con tu precio de hoy ({dinero(r.actual)}) perdés {dinero(-r.gananciaActual)} por unidad.</p>
+                <p className="pc-mensaje pc-mal">Con tu precio de hoy ({dinero(r.actual)}) perdés {dinero(-r.gananciaActual)} por {etiquetaVenta(r.N)}.</p>
               )}
               <div className="pc-acciones">
                 <button type="button" className="pc-boton-usar" onClick={() => acciones.abrir(receta.id)}>Abrir</button>

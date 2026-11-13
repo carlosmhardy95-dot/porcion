@@ -15,6 +15,22 @@ export function costoLinea(linea, insumo) {
   return envase > 0 ? (num(insumo.price) / envase) * num(linea.used) : 0;
 }
 
+// Redondea hacia arriba al múltiplo de «paso». El margen de 1e-9 evita que un error de
+// redondeo de la computadora (9700,000000000002) suba al siguiente múltiplo.
+export function redondearArriba(valor, paso) {
+  return Math.ceil(valor / paso - 1e-9) * paso;
+}
+
+// Cómo se vende: 1 = por unidad, 12 = por docena, 6 = media docena, otro número = paquete de N.
+export function unidadesPorVenta(receta) {
+  return Math.max(1, Math.round(num(receta.paquete) || 1));
+}
+
+export function etiquetaVenta(n, { mayuscula = false } = {}) {
+  const t = n === 1 ? 'unidad' : n === 12 ? 'docena' : n === 6 ? 'media docena' : `paquete de ${n}`;
+  return mayuscula ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+}
+
 export function gastosFijosPorUnidad(negocio) {
   return num(negocio.fijosMes) / Math.max(1, num(negocio.unidadesMes));
 }
@@ -33,11 +49,20 @@ export function calcularReceta(receta, insumosPorId, negocio, redondeo = REDONDE
   const t = num(receta.impuestos) / 100;
   const denominador = 1 - g - t;
   const invalido = denominador < 0.05;
-  const precio = invalido ? 0 : Math.ceil(C / denominador / redondeo) * redondeo;
+  const precio = invalido ? 0 : redondearArriba(C / denominador, redondeo);
   const ganancia = precio * (1 - t) - C;
 
+  // Venta por paquete (docena, media docena…): el costo es el de N unidades más la caja del paquete,
+  // y el precio se redondea sobre el paquete. Con N = 1 da lo mismo que por unidad.
+  const N = unidadesPorVenta(receta);
+  const cajaPaquete = N > 1 ? num(receta.cajaPaquete) : 0;
+  const Cp = C * N + cajaPaquete;
+  const precioPaquete = invalido ? 0 : redondearArriba(Cp / denominador, redondeo);
+  const gananciaPaquete = precioPaquete * (1 - t) - Cp;
+
+  // «Tu precio de hoy» y «competencia» se cargan en la misma forma en que vendés (por unidad o por paquete).
   const actual = num(receta.actual);
-  const gananciaActual = actual > 0 ? actual * (1 - t) - C : null;
+  const gananciaActual = actual > 0 ? actual * (1 - t) - Cp : null;
   const competencia = num(receta.competencia);
 
   const partes = [
@@ -50,7 +75,7 @@ export function calcularReceta(receta, insumosPorId, negocio, redondeo = REDONDE
     .map((p) => ({ ...p, porcentaje: C > 0 ? (p.valor / C) * 100 : 0 }))
     .sort((a, b) => b.valor - a.valor);
 
-  return { R, I, G, L, pk, fx, C, precio, ganancia, invalido, actual, gananciaActual, competencia, lineas, partes };
+  return { R, I, G, L, pk, fx, C, precio, ganancia, invalido, N, cajaPaquete, Cp, precioPaquete, gananciaPaquete, actual, gananciaActual, competencia, lineas, partes };
 }
 
 export function diasDesde(fechaISO, ahora = Date.now()) {

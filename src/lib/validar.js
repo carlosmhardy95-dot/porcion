@@ -15,7 +15,7 @@ export const LIMITES = {
 const UNIDADES = ['g', 'kg', 'ml', 'l', 'u'];
 const TEMAS = ['papel', 'tinta'];
 const PRECIOS = ['sugerido', 'actual'];
-const MODOS = ['unidad', 'tanda'];
+const MODOS = ['unidad', 'paquete', 'tanda'];
 
 function esObjeto(v) {
   return v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -94,6 +94,8 @@ function sanearReceta(r, insumosValidos) {
     id: r.id,
     nombre: texto(r.nombre),
     rinde: numeroTexto(r.rinde, '1'),
+    paquete: numeroTexto(r.paquete, '1'),
+    cajaPaquete: numeroTexto(r.cajaPaquete, '0'),
     horno: numeroTexto(r.horno, '0'),
     minutos: numeroTexto(r.minutos, '0'),
     packaging: numeroTexto(r.packaging, '0'),

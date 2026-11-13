@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { calcularReceta, diasDesde, dinero, dinero1, cantidad, num, DIAS_PRECIO_VIEJO } from '../lib/calculo.js';
+import { calcularReceta, diasDesde, dinero, dinero1, cantidad, num, etiquetaVenta, DIAS_PRECIO_VIEJO } from '../lib/calculo.js';
 import { CampoNumero, SelectorUnidad, Ayudante } from './Campos.jsx';
 
 function IconoCruz() {
@@ -18,6 +18,11 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
   const enReceta = new Set(receta.lines.map((l) => l.insumoId));
   const disponibles = estado.insumos.filter((i) => !enReceta.has(i.id) && i.name.trim() !== '');
   const porUnidad = (total) => (r.R === 1 ? ' por unidad.' : ` por tanda (${dinero(total / r.R)} por unidad).`);
+  const venta = etiquetaVenta(r.N);
+  const porPaquete = r.N > 1;
+  const OPCIONES_VENTA = [['1', 'Por unidad'], ['12', 'Por docena'], ['6', 'Media docena']];
+  const otraCantidad = !OPCIONES_VENTA.some(([v]) => Number(v) === r.N);
+  const [eligiendoOtra, setEligiendoOtra] = useState(otraCantidad);
 
   const agregarNuevo = () => {
     const id = acciones.agregarNuevo();
@@ -44,6 +49,32 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
           <label htmlFor="pc-rinde">Rinde</label>
           <input id="pc-rinde" type="number" inputMode="decimal" step="any" min="1" value={receta.rinde} onChange={(e) => acciones.cambiarReceta('rinde', e.target.value)} />
           <span>unidades por tanda</span>
+        </div>
+        <div className="pc-venta">
+          <p className="pc-venta-titulo" id="pc-venta-titulo">¿Cómo lo vendés?</p>
+          <div className="pc-pastillas" role="group" aria-labelledby="pc-venta-titulo">
+            {OPCIONES_VENTA.map(([valor, texto]) => (
+              <button
+                key={valor}
+                type="button"
+                className="pc-pastilla"
+                aria-pressed={!eligiendoOtra && r.N === Number(valor)}
+                onClick={() => { setEligiendoOtra(false); acciones.cambiarReceta('paquete', valor); }}
+              >
+                {texto}
+              </button>
+            ))}
+            <button type="button" className="pc-pastilla" aria-pressed={eligiendoOtra} onClick={() => setEligiendoOtra(true)}>
+              Otra cantidad
+            </button>
+          </div>
+          {eligiendoOtra && (
+            <div className="pc-fila-pregunta">
+              <label htmlFor="pc-paquete" className="solo-lectores">Unidades por paquete</label>
+              <input id="pc-paquete" type="number" inputMode="numeric" step="1" min="1" value={receta.paquete ?? '1'} onChange={(e) => acciones.cambiarReceta('paquete', e.target.value)} />
+              <span>unidades por paquete</span>
+            </div>
+          )}
         </div>
       </section>
 
@@ -156,12 +187,23 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
         </div>
 
         <div className="pc-pregunta">
-          <label htmlFor="pc-caja">¿Cuánto gastás en caja, bolsa o envío por unidad?</label>
+          <label htmlFor="pc-caja">{porPaquete ? '¿Cuánto gastás en envoltorio o bolsita por cada unidad?' : '¿Cuánto gastás en caja, bolsa o envío por unidad?'}</label>
           <div className="pc-fila-pregunta">
             <span>$</span>
             <input id="pc-caja" type="number" inputMode="decimal" step="any" min="0" value={receta.packaging} onChange={(e) => acciones.cambiarReceta('packaging', e.target.value)} />
           </div>
+          {porPaquete && <p className="pc-chico">Si no va envuelta cada una, dejalo en 0.</p>}
         </div>
+
+        {porPaquete && (
+          <div className="pc-pregunta">
+            <label htmlFor="pc-caja-paquete">¿Cuánto cuesta la caja o bolsa de la {venta}?</label>
+            <div className="pc-fila-pregunta">
+              <span>$</span>
+              <input id="pc-caja-paquete" type="number" inputMode="decimal" step="any" min="0" value={receta.cajaPaquete ?? '0'} onChange={(e) => acciones.cambiarReceta('cajaPaquete', e.target.value)} />
+            </div>
+          </div>
+        )}
 
         <details className="pc-ajustes">
           <summary>Ajustes de tu negocio</summary>
@@ -196,27 +238,37 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
               <span>Precio de venta sugerido</span>
               <span>{r.R > 1 ? `Tanda de ${cantidad(r.R)} u.` : '1 unidad'}</span>
             </div>
-            <span className="pc-grande">{r.invalido ? '—' : dinero(r.precio)}</span>
+            <span className="pc-grande">{r.invalido ? '—' : dinero(porPaquete ? r.precioPaquete : r.precio)}</span>
             <span className="pc-chico-tinta">
-              por unidad{!r.invalido && r.R > 1 ? ` · la tanda: ${dinero(r.precio * r.R)}` : ''}
+              {porPaquete
+                ? `por ${venta}${r.invalido ? '' : ` · por unidad: ${dinero(r.precio)}`}`
+                : `por unidad${!r.invalido && r.R > 1 ? ` · la tanda: ${dinero(r.precio * r.R)}` : ''}`}
             </span>
           </div>
           <dl className="pc-cifras">
             <div className="pc-cifra">
-              <dt>Costo por unidad</dt>
-              <dd className="pc-numero">{dinero(r.C)}</dd>
+              <dt>{porPaquete ? `Costo por ${venta}` : 'Costo por unidad'}</dt>
+              <dd className="pc-numero">{dinero(porPaquete ? r.Cp : r.C)}</dd>
             </div>
             <div className="pc-cifra">
               <dt>Costo total de producción</dt>
               <dd className="pc-numero">{dinero(r.C * r.R)}</dd>
             </div>
             <div className="pc-cifra">
-              <dt>Ganancia real por unidad</dt>
-              <dd className={`pc-numero ${!r.invalido && r.ganancia >= 0 ? 'pc-verde' : ''}`}>{r.invalido ? '—' : dinero(r.ganancia)}</dd>
+              <dt>{porPaquete ? `Ganancia real por ${venta}` : 'Ganancia real por unidad'}</dt>
+              <dd className={`pc-numero ${!r.invalido && (porPaquete ? r.gananciaPaquete : r.ganancia) >= 0 ? 'pc-verde' : ''}`}>
+                {r.invalido ? '—' : dinero(porPaquete ? r.gananciaPaquete : r.ganancia)}
+              </dd>
             </div>
             <div className="pc-cifra">
               <dt>Margen de ganancia</dt>
-              <dd className="pc-numero">{r.invalido || r.precio <= 0 ? '—' : `${(Math.round((r.ganancia / r.precio) * 1000) / 10).toLocaleString('es-AR')} %`}</dd>
+              <dd className="pc-numero">
+                {(() => {
+                  const p = porPaquete ? r.precioPaquete : r.precio;
+                  const g = porPaquete ? r.gananciaPaquete : r.ganancia;
+                  return r.invalido || p <= 0 ? '—' : `${(Math.round((g / p) * 1000) / 10).toLocaleString('es-AR')} %`;
+                })()}
+              </dd>
             </div>
           </dl>
           {r.invalido && <p className="pc-mensaje pc-mal">La ganancia más los impuestos tienen que sumar menos de 95 %.</p>}
@@ -237,23 +289,26 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
       <section className="pc-seccion">
         <h2>Compará</h2>
         <div className="pc-grilla2">
-          <CampoNumero id="pc-actual" etiqueta="Tu precio de hoy ($)" valor={receta.actual} onCambio={(v) => acciones.cambiarReceta('actual', v)} />
-          <CampoNumero id="pc-competencia" etiqueta="Precio de tu competencia ($)" valor={receta.competencia} onCambio={(v) => acciones.cambiarReceta('competencia', v)} />
+          <CampoNumero id="pc-actual" etiqueta={`Tu precio de hoy por ${venta} ($)`} valor={receta.actual} onCambio={(v) => acciones.cambiarReceta('actual', v)} />
+          <CampoNumero id="pc-competencia" etiqueta={`Precio de tu competencia por ${venta} ($)`} valor={receta.competencia} onCambio={(v) => acciones.cambiarReceta('competencia', v)} />
         </div>
         {r.gananciaActual !== null && (
           <p className={`pc-mensaje ${r.gananciaActual < 0 ? 'pc-mal' : 'pc-bien'}`}>
             {r.gananciaActual < 0
-              ? `Con ${dinero(r.actual)} perdés ${dinero(-r.gananciaActual)} por unidad.`
-              : `Con ${dinero(r.actual)} ganás ${dinero(r.gananciaActual)} por unidad.`}
+              ? `Con ${dinero(r.actual)} perdés ${dinero(-r.gananciaActual)} por ${venta}.`
+              : `Con ${dinero(r.actual)} ganás ${dinero(r.gananciaActual)} por ${venta}.`}
           </p>
         )}
-        {r.competencia > 0 && !r.invalido && (
-          <p className="pc-mensaje pc-neutro">
-            {r.precio > r.competencia && `Tu competencia cobra ${dinero(r.precio - r.competencia)} menos que tu precio sugerido.`}
-            {r.precio < r.competencia && `Tu competencia cobra ${dinero(r.competencia - r.precio)} más que tu precio sugerido.`}
-            {r.precio === r.competencia && 'Tu precio sugerido es igual al de tu competencia.'}
-          </p>
-        )}
+        {r.competencia > 0 && !r.invalido && (() => {
+          const sugerido = porPaquete ? r.precioPaquete : r.precio;
+          return (
+            <p className="pc-mensaje pc-neutro">
+              {sugerido > r.competencia && `Tu competencia cobra ${dinero(sugerido - r.competencia)} menos que tu precio sugerido.`}
+              {sugerido < r.competencia && `Tu competencia cobra ${dinero(r.competencia - sugerido)} más que tu precio sugerido.`}
+              {sugerido === r.competencia && 'Tu precio sugerido es igual al de tu competencia.'}
+            </p>
+          );
+        })()}
       </section>
 
       <section className="pc-seccion">

@@ -10,66 +10,70 @@ const insumos = Object.fromEntries(estado.insumos.map((i) => [i.id, i]));
 const receta = estado.recetas.find((x) => x.id === recetaId);
 const r = calcularReceta(receta, insumos, estado.negocio);
 const t = num(receta.impuestos) / 100;
-const docena = r.precio * 12;
-const costoDocena = r.C * 12;
-const gananciaDocena = docena * (1 - t) - costoDocena;
-const minimoDocena = costoDocena / (1 - t);
+const docena = r.precioPaquete;
+const minimoDocena = r.Cp / (1 - t);
 const conDescuento = docena * 0.9;
-const gananciaDescuento = conDescuento * (1 - t) - costoDocena;
+const gananciaDescuento = conDescuento * (1 - t) - r.Cp;
 ---
 <Articulo
   title="Cuánto cobrar la docena de alfajores: cómo calcular el precio"
-  description="Cómo calcular el precio de la docena de alfajores caseros: costo por unidad, tiempo de trabajo, caja, descuentos por docena y ganancia real. Con ejemplo de alfajores de maicena."
+  description="Cómo calcular el precio de la docena de alfajores caseros: costo por docena, tiempo de trabajo, caja, descuentos y ganancia real. Con ejemplo de alfajores de maicena."
   h1="¿Cuánto cobrar la docena de alfajores?"
-  bajada="Un ejemplo completo con alfajores de maicena: cuánto cuesta cada uno, a cuánto vender la docena y hasta dónde podés hacer descuento."
+  bajada="Un ejemplo completo con alfajores de maicena: cuánto cuesta la docena, a cuánto venderla y hasta dónde podés hacer descuento."
   migas={[{ nombre: 'Cuánto cobrar', url: '/cuanto-cobrar/' }]}
   actualizado="2026-11-12"
-  llamado={{ titulo: 'Calculá tus alfajores', texto: 'Abrí este ejemplo en la calculadora y cambiá ingredientes, precios y tiempos por los tuyos.', url: '/calculadora/?ejemplo=alfajores', boton: 'Abrir el ejemplo' }}
+  llamado={{ titulo: 'Calculá tu docena', texto: 'Abrí este ejemplo, cargá tus ingredientes y cuántos alfajores te salen. El precio de la docena aparece solo.', url: '/calculadora/?ejemplo=alfajores', boton: 'Abrir el ejemplo' }}
 >
   <div class="respuesta">
     <p class="respuesta-titulo">La respuesta corta</p>
-    <p>Calculá cuánto te cuesta un alfajor (no la docena) y sacá su precio. Después multiplicalo por 12. En el ejemplo de abajo cada alfajor cuesta {dinero(r.C)}, se vende a {dinero(r.precio)} y la docena queda en <strong>{dinero(docena)}</strong>.</p>
+    <p>Cargá tus ingredientes, cuántos alfajores te salen de la tanda y elegí <strong>Por docena</strong> en «¿Cómo lo vendés?». La calculadora reparte el costo entre todos los alfajores que te salen y te da el precio de la docena. En el ejemplo, la docena cuesta {dinero(r.Cp)} y se vende a <strong>{dinero(docena)}</strong>.</p>
   </div>
 
-  <h2>Ejemplo: alfajores de maicena, tanda de {r.R}</h2>
-  <p>Estos son los ingredientes de una tanda, con precios de muestra:</p>
+  <h2>No importa cuántos te salgan por tanda</h2>
+  <p>Si de tu receta salen 12, 30 o 45 alfajores, cargá ese número en «Rinde». Porción calcula cuánto te cuesta cada alfajor y lo multiplica por 12, así que el precio de la docena es el mismo aunque cambies el tamaño de la tanda. Lo que sí cambia es tu costo si hacés más por vez: el tiempo de preparar y limpiar se reparte entre más alfajores.</p>
+
+  <h2>Ejemplo: alfajores de maicena</h2>
+  <p>Estos son los ingredientes de una tanda de {r.R}, con precios de muestra:</p>
   <EjemploReceta clave="alfajores" mostrar="ingredientes" />
 
   <h3>De la tanda a cada alfajor</h3>
-  <p>Al costo de los ingredientes se suman el horno, el tiempo de trabajo de toda la tanda (hacer las tapas, rellenar, pasar por coco y limpiar), la caja y los gastos fijos. Todo eso, dividido por los alfajores que salen:</p>
+  <p>Al costo de los ingredientes se suman el horno, el tiempo de trabajo de toda la tanda (hacer las tapas, rellenar, pasar por coco y limpiar), el envoltorio y los gastos fijos. Todo eso, dividido por los alfajores que salen:</p>
   <EjemploReceta clave="alfajores" mostrar="gastos" />
 
-  <h3>El precio</h3>
+  <h3>El precio de la docena</h3>
   <EjemploReceta clave="alfajores" mostrar="resultado" />
-  <p>En una docena ganás {dinero(gananciaDocena)}, después de pagar los costos y los impuestos.</p>
+  <p>El precio se redondea sobre la docena, no sobre cada alfajor. Por eso la docena no es exactamente 12 veces el precio por unidad: así no le sumás redondeos de más.</p>
+
+  <h2>La caja de la docena</h2>
+  <p>Cuando elegís «Por docena», la calculadora te pregunta dos cosas por separado:</p>
+  <ul>
+    <li><strong>El envoltorio de cada alfajor</strong>, si va envuelto uno por uno. Si no, dejalo en 0.</li>
+    <li><strong>La caja o bolsa de la docena</strong>, que se suma una sola vez por docena.</li>
+  </ul>
 
   <h2>¿Por qué el tiempo pesa tanto?</h2>
-  <p>En el ejemplo, tu tiempo es la parte más grande del costo de cada alfajor: más que los ingredientes. Es lo que pasa con los productos chicos y hechos a mano, y es la razón por la que tantos alfajores caseros se venden por debajo de lo que cuestan. Si hoy cobrás {dinero(r.actual)} por alfajor, con estos costos perdés {dinero(-r.gananciaActual)} en cada uno.</p>
-  <p>Hacer tandas más grandes ayuda: el tiempo de preparar y limpiar no crece al mismo ritmo que la cantidad.</p>
+  <p>En el ejemplo, tu tiempo es la parte más grande del costo de cada alfajor: más que los ingredientes. Es lo que pasa con los productos chicos y hechos a mano, y es la razón por la que tantos alfajores caseros se venden por debajo de lo que cuestan. Si hoy cobrás la docena a {dinero(r.actual)}, con estos costos perdés {dinero(-r.gananciaActual)} en cada una.</p>
 
-  <h2>Si vendés la docena en una sola caja</h2>
-  <p>La calculadora pide el costo de la caja <em>por unidad</em>. Si la docena va en una caja, dividí lo que pagás por esa caja por 12 y cargá ese número. Si además va cada alfajor envuelto, sumá también el envoltorio de cada uno.</p>
-
-  <h2>¿Hasta dónde puedo hacer descuento por docena?</h2>
+  <h2>¿Hasta dónde puedo hacer descuento?</h2>
   <p>Un descuento por cantidad está bien, siempre que sepas cuánto te deja. Con los números del ejemplo:</p>
   <div class="cuenta">
     <div><span>Docena a precio sugerido</span><span class="cifra">{dinero(docena)}</span></div>
-    <div><span>Te deja</span><span class="cifra">{dinero(gananciaDocena)}</span></div>
+    <div><span>Te deja</span><span class="cifra">{dinero(r.gananciaPaquete)}</span></div>
     <div><span>Con 10 % de descuento</span><span class="cifra">{dinero(conDescuento)}</span></div>
     <div><span>Te deja</span><span class="cifra">{dinero(gananciaDescuento)}</span></div>
     <div class="mal"><span>Por debajo de esto, perdés plata</span><span class="cifra">{dinero(minimoDocena)}</span></div>
   </div>
-  <p>Ese mínimo es el costo de la docena dividido por lo que te queda después de impuestos: {dinero(costoDocena)} ÷ {(1 - t).toLocaleString('es-AR')}. Cobrar eso es trabajar sin ganar nada.</p>
+  <p>Ese mínimo es el costo de la docena dividido por lo que te queda después de impuestos: {dinero(r.Cp)} ÷ {(1 - t).toLocaleString('es-AR')}. Cobrar eso es trabajar sin ganar nada.</p>
 
   <h2>Preguntas frecuentes</h2>
   <div class="preguntas">
     <details>
-      <summary>¿Sirve igual para alfajores de chocolate o rellenos especiales?</summary>
-      <div><p>Sí, el método es el mismo para cualquier alfajor. Cambian los ingredientes y, sobre todo, el tiempo: bañar en chocolate lleva más trabajo que pasar por coco.</p></div>
+      <summary>¿Y si vendo media docena o cajas de 9?</summary>
+      <div><p>En «¿Cómo lo vendés?» elegí «Media docena» u «Otra cantidad» y escribí cuántos alfajores lleva la caja. El precio se calcula para esa cantidad.</p></div>
     </details>
     <details>
-      <summary>¿Cómo cuento el tiempo si hago varias cosas a la vez?</summary>
-      <div><p>Contá el tiempo que realmente le dedicás a esa tanda. Si mientras se hornean las tapas hacés otra cosa, ese rato no va en los alfajores.</p></div>
+      <summary>¿Sirve igual para alfajores de chocolate o rellenos especiales?</summary>
+      <div><p>Sí, el método es el mismo para cualquier alfajor. Cambian los ingredientes y, sobre todo, el tiempo: bañar en chocolate lleva más trabajo que pasar por coco.</p></div>
     </details>
     <details>
       <summary>¿Y si mi competencia cobra menos?</summary>

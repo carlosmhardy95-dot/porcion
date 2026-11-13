@@ -153,6 +153,7 @@ export default function Calculadora() {
 
       {vista === 'editor' && receta && (
         <EditorReceta
+          key={receta.id}
           receta={receta}
           estado={estado}
           insumosPorId={insumosPorId}

@@ -81,6 +81,9 @@
 .pc-app .pc-rinde label { font-size: 1rem; font-weight: 700; color: var(--carbon); }
 .pc-app .pc-rinde input { width: 96px; }
 .pc-rinde span { color: var(--carbon-suave); }
+.pc-venta { display: flex; flex-direction: column; gap: 8px; }
+.pc-venta-titulo { font-weight: 700; }
+.pc-venta .pc-fila-pregunta input { width: 110px; }
 
 .pc-grilla2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: end; }
 .pc-grilla3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-items: end; }

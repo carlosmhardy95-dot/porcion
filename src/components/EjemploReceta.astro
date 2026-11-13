@@ -2,7 +2,7 @@
 // Muestra una receta de ejemplo calculada con la calculadora real (mismas fórmulas).
 import { estadoInicial } from '../lib/almacen.js';
 import { crearDesdePlantilla } from '../lib/plantillas.js';
-import { calcularReceta, costoLinea, dinero, cantidad, num } from '../lib/calculo.js';
+import { calcularReceta, costoLinea, dinero, cantidad, num, etiquetaVenta } from '../lib/calculo.js';
 import { UNIDADES } from './Campos.jsx';
 
 const { clave, mostrar = 'resultado' } = Astro.props;
@@ -11,7 +11,10 @@ const receta = estado.recetas.find((r) => r.id === recetaId);
 const insumos = Object.fromEntries(estado.insumos.map((i) => [i.id, i]));
 const r = calcularReceta(receta, insumos, estado.negocio);
 const unidad = Object.fromEntries(UNIDADES);
-const margen = (Math.round((r.ganancia / r.precio) * 1000) / 10).toLocaleString('es-AR');
+const paquete = r.N > 1;
+const venta = etiquetaVenta(r.N);
+const pct = (g, p) => (Math.round((g / p) * 1000) / 10).toLocaleString('es-AR');
+const margen = paquete ? pct(r.gananciaPaquete, r.precioPaquete) : pct(r.ganancia, r.precio);
 const filas = receta.lines.map((l) => {
   const i = insumos[l.insumoId];
   return { nombre: i.name, envase: `${cantidad(i.pack)} ${unidad[i.unit]}`, precio: dinero(num(i.price)), usa: `${cantidad(l.used)} ${unidad[i.unit]}`, costo: costoLinea(l, i) };
@@ -42,12 +45,21 @@ const filas = receta.lines.map((l) => {
     <div class="total"><span>Costo por unidad</span><span class="cifra">{dinero(r.C)}</span></div>
   </div>
 )}
-{mostrar === 'resultado' && (
+{mostrar === 'resultado' && !paquete && (
   <div class="ejemplo-resultado">
     <div class="principal"><span>Precio de venta sugerido{r.R > 1 ? ' por unidad' : ''}</span><strong>{dinero(r.precio)}</strong></div>
     <div><span>Costo por unidad</span><strong>{dinero(r.C)}</strong></div>
     <div><span>{r.R > 1 ? `La tanda de ${cantidad(r.R)}` : 'Impuestos y comisiones'}</span><strong>{r.R > 1 ? dinero(r.precio * r.R) : `${cantidad(receta.impuestos)} %`}</strong></div>
     <div><span>Ganancia real por unidad</span><strong class="positivo">{dinero(r.ganancia)}</strong></div>
+    <div><span>Margen</span><strong>{margen} %</strong></div>
+  </div>
+)}
+{mostrar === 'resultado' && paquete && (
+  <div class="ejemplo-resultado">
+    <div class="principal"><span>Precio de venta sugerido por {venta}</span><strong>{dinero(r.precioPaquete)}</strong></div>
+    <div><span>Costo por {venta}</span><strong>{dinero(r.Cp)}</strong></div>
+    <div><span>Precio por unidad</span><strong>{dinero(r.precio)}</strong></div>
+    <div><span>Ganancia real por {venta}</span><strong class="positivo">{dinero(r.gananciaPaquete)}</strong></div>
     <div><span>Margen</span><strong>{margen} %</strong></div>
   </div>
 )}

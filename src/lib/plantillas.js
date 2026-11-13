@@ -4,7 +4,7 @@ import { nuevoId, normalizar } from './almacen.js';
 export const PLANTILLAS = {
   alfajores: {
     etiqueta: 'Alfajores',
-    receta: { nombre: 'Alfajores de maicena', rinde: '12', horno: '25', minutos: '90', packaging: '150', ganancia: '30', impuestos: '5', actual: '900', competencia: '2000' },
+    receta: { nombre: 'Alfajores de maicena', rinde: '12', paquete: '12', cajaPaquete: '0', horno: '25', minutos: '90', packaging: '150', ganancia: '30', impuestos: '5', actual: '10800', competencia: '24000' },
     ingredientes: [
       ['Maicena', '500', 'g', '1800', '150'],
       ['Harina 0000', '1000', 'g', '1200', '100'],
@@ -76,6 +76,8 @@ export function recetaVacia() {
     id: nuevoId('rec'),
     nombre: '',
     rinde: '1',
+    paquete: '1',
+    cajaPaquete: '0',
     horno: '0',
     minutos: '0',
     packaging: '0',

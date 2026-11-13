@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { calcularReceta, dinero } from '../lib/calculo.js';
-import { dibujarLista, etiquetaTanda, itemsDeLista, textoWhatsApp } from '../lib/listaPrecios.js';
+import { calcularReceta, dinero, etiquetaVenta } from '../lib/calculo.js';
+import { dibujarLista, etiquetaTanda, itemsDeLista, modoInicial, textoWhatsApp } from '../lib/listaPrecios.js';
 
 function aBlob(canvas) {
   return new Promise((resolver) => canvas.toBlob(resolver, 'image/png'));
@@ -33,10 +33,10 @@ export default function ListaPrecios({ estado, insumosPorId, acciones }) {
     setTimeout(() => setAviso(''), 3000);
   };
 
-  const alternar = (recetaId, rinde) => {
+  const alternar = (recetaId, r) => {
     const nuevos = elegidos.has(recetaId)
       ? lista.items.filter((i) => i.recetaId !== recetaId)
-      : [...lista.items, { recetaId, modo: rinde > 1 ? 'tanda' : 'unidad' }];
+      : [...lista.items, { recetaId, modo: modoInicial(r) }];
     acciones.cambiarLista('items', nuevos);
   };
 
@@ -111,16 +111,17 @@ export default function ListaPrecios({ estado, insumosPorId, acciones }) {
               return (
                 <div key={receta.id} className="pc-tarjeta pc-producto">
                   <div className="pc-producto-fila">
-                    <input id={id} type="checkbox" className="pc-check" checked={!!item} onChange={() => alternar(receta.id, r.R)} />
+                    <input id={id} type="checkbox" className="pc-check" checked={!!item} onChange={() => alternar(receta.id, r)} />
                     <label htmlFor={id} className="pc-producto-nombre">{receta.nombre || 'Sin nombre'}</label>
-                    <span className="pc-mono">{r.invalido ? '—' : dinero(r.precio)}</span>
+                    <span className="pc-mono">{r.invalido ? '—' : dinero(r.N > 1 ? r.precioPaquete : r.precio)}</span>
                   </div>
-                  {item && r.R > 1 && (
+                  {item && (r.N > 1 || r.R > 1) && (
                     <div className="pc-campo">
                       <label htmlFor={`${id}-modo`}>Mostrar precio</label>
                       <select id={`${id}-modo`} value={item.modo} onChange={(e) => cambiarModo(receta.id, e.target.value)}>
                         <option value="unidad">Por unidad</option>
-                        <option value="tanda">{etiquetaTanda(r.R)}</option>
+                        {r.N > 1 && <option value="paquete">{etiquetaVenta(r.N, { mayuscula: true })}</option>}
+                        {(r.N === 1 || item.modo === 'tanda') && r.R > 1 && <option value="tanda">{etiquetaTanda(r.R)} (tanda)</option>}
                       </select>
                     </div>
                   )}
