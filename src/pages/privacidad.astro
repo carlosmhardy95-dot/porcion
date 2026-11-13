@@ -1,12 +1,13 @@
 ---
 import Articulo from '../layouts/Articulo.astro';
+import { CONTACTO } from '../config.js';
 ---
 <Articulo
   title="Privacidad"
   description="Qué datos usa Porción y dónde se guardan: sin registro, tus recetas quedan en tu dispositivo y no se envían a ningún servidor."
   h1="Privacidad"
   bajada="En pocas palabras: no te pedimos datos y tus recetas no salen de tu dispositivo."
-  actualizado="2026-11-12"
+  actualizado="2026-11-13"
 >
   <h2>Qué datos guardamos</h2>
   <p>Ninguno en nuestros servidores. Porción no tiene registro ni cuentas, y no te pide nombre, email ni teléfono.</p>
@@ -25,6 +26,13 @@ import Articulo from '../layouts/Articulo.astro';
     <li><strong>WhatsApp:</strong> si usás «Abrir en WhatsApp» en la lista de precios, se abre WhatsApp con el texto de tu lista. Lo que envíes desde ahí queda sujeto a las condiciones de WhatsApp.</li>
   </ul>
 
-  <h2>Cookies y estadísticas</h2>
-  <p>Porción no usa cookies propias ni herramientas de medición de visitas. Si en el futuro sumamos estadísticas, lo vamos a explicar en esta página antes de activarlas.</p>
+  <h2>Estadísticas de visitas</h2>
+  <p>Para saber cuántas personas usan Porción y qué páginas les sirven, usamos <strong>Cloudflare Web Analytics</strong>. Cuenta visitas sin cookies ni almacenamiento en tu navegador, y sin identificarte por tu dirección IP ni por otros datos de tu dispositivo. Vemos números agregados: cuántas visitas tuvo cada página, desde qué país y con qué tipo de dispositivo y navegador.</p>
+  <p>Esas estadísticas nunca incluyen tus recetas, ingredientes ni precios: esos datos no salen de tu dispositivo.</p>
+
+  <h2>Cookies</h2>
+  <p>Porción no usa cookies propias.</p>
+
+  <h2>Contacto</h2>
+  <p>Si tenés dudas sobre tu privacidad, escribinos a <a href={`mailto:${CONTACTO}`}>{CONTACTO}</a>.</p>
 </Articulo>

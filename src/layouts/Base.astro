@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import Logotipo from '../components/Logotipo.astro';
-import { SITE_NAME, INDEXABLE } from '../config.js';
+import { SITE_NAME, INDEXABLE, CONTACTO } from '../config.js';
 
 const {
   title,
@@ -13,6 +13,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const robots = INDEXABLE && !noindex ? 'index, follow' : 'noindex, follow';
 const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
 const ruta = Astro.url.pathname;
+const imagenSocial = new URL('/og/porcion.png', Astro.site).href;
 ---
 <!doctype html>
 <html lang="es-AR">
@@ -44,6 +45,14 @@ const ruta = Astro.url.pathname;
   <meta property="og:description" content={description}>
   <meta property="og:url" content={canonical}>
   <meta property="og:locale" content="es_AR">
+  <meta property="og:image" content={imagenSocial}>
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Porción: calculadora gratis de costos y precios para emprendedores gastronómicos">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content={fullTitle}>
+  <meta name="twitter:description" content={description}>
+  <meta name="twitter:image" content={imagenSocial}>
 
   <link rel="preload" href="/fuentes/chivo.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fuentes/rosario.woff2" as="font" type="font/woff2" crossorigin>
@@ -91,7 +100,7 @@ const ruta = Astro.url.pathname;
           <a href="/privacidad/">Privacidad</a>
         </nav>
       </div>
-      <p class="pie-nota">Herramienta gratuita para emprendedores gastronómicos. Sin registro: tus datos quedan en tu dispositivo.</p>
+      <p class="pie-nota">Herramienta gratuita para emprendedores gastronómicos. Sin registro: tus datos quedan en tu dispositivo. ¿Ideas o problemas? Escribinos a <a href={`mailto:${CONTACTO}?subject=Comentario%20sobre%20Porci%C3%B3n`}>{CONTACTO}</a>.</p>
     </div>
   </footer>
   <script>

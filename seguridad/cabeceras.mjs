@@ -34,11 +34,13 @@ export function huellasDeScripts(html) {
 export function politica(huellas) {
   return [
     "default-src 'self'",
-    `script-src 'self' ${[...huellas].sort().join(' ')}`.trim(),
+    // Cloudflare Web Analytics: el script se baja de static.cloudflareinsights.com
+    // y los datos van a cloudflareinsights.com (o a /cdn-cgi/rum del propio sitio).
+    `script-src 'self' https://static.cloudflareinsights.com ${[...huellas].sort().join(' ')}`.trim(),
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self'",
-    "connect-src 'self'",
+    "connect-src 'self' https://cloudflareinsights.com",
     "manifest-src 'self'",
     "worker-src 'self'",
     "object-src 'none'",

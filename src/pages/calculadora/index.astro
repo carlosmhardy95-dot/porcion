@@ -1,11 +1,26 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Calculadora from '../../components/Calculadora.jsx';
+import { SITE_URL } from '../../config.js';
+
+const datos = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Porción: calculadora de costos y precios de recetas',
+  url: new URL('/calculadora/', SITE_URL).href,
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Cualquiera (funciona en el navegador)',
+  inLanguage: 'es-AR',
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'ARS' },
+  description: 'Calculá el costo real de tus recetas y a cuánto venderlas: ingredientes, gas, packaging, tu tiempo y gastos fijos.',
+};
 ---
 <Base
   title="Calculadora de costos de recetas gratis"
   description="Calculá el costo real de tus recetas y a cuánto venderlas: ingredientes, gas, packaging, tu tiempo y gastos fijos. Gratis, sin registro y desde el celular."
 >
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(datos).replace(/</g, '\\u003c')} />
   <div class="contenedor pagina">
     <header class="intro">
       <h1>Calculadora de costos y precios para tus recetas</h1>

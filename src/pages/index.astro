@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import { estadoInicial } from '../lib/almacen.js';
 import { crearDesdePlantilla } from '../lib/plantillas.js';
 import { calcularReceta, dinero, num } from '../lib/calculo.js';
+import { SITE_URL, CONTACTO } from '../config.js';
 
 // Los números de la portada salen de la calculadora real (ejemplo de alfajores),
 // así nunca muestran algo distinto de lo que calcula la herramienta.
@@ -28,11 +29,17 @@ const tramos = [
   { clave: 'ganancia', etiqueta: 'Tu ganancia', valor: r.ganancia, color: 'var(--oliva)' },
 ];
 const ancho = (v) => `${((v / r.precio) * 100).toFixed(2)}%`;
+
+const datos = [
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Porción', url: `${SITE_URL}/`, inLanguage: 'es-AR' },
+  { '@context': 'https://schema.org', '@type': 'Organization', name: 'Porción', url: `${SITE_URL}/`, logo: `${SITE_URL}/iconos/icono-512.png`, email: CONTACTO },
+];
 ---
 <Base
   title="Porción: calculá el costo y el precio de tus recetas"
   description="Calculadora gratis para emprendedores gastronómicos. Calculá cuánto te cuesta producir, definí tus precios de venta y descubrí cuánto ganás. Sin registro."
 >
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(datos).replace(/</g, '\\u003c')} />
   <section class="contenedor portada">
     <div class="portada-texto">
       <h1>Que tus números cierren tan bien como tus recetas.</h1>
