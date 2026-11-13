@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { calcularReceta, conExtras, conImpuestos, diasDesde, dinero, dinero1, cantidad, num, etiquetaVenta, DIAS_PRECIO_VIEJO } from '../lib/calculo.js';
-import { CampoNumero, SelectorUnidad, Ayudante } from './Campos.jsx';
+import { CampoNumero, EntradaNumero, SelectorUnidad, Ayudante } from './Campos.jsx';
 
 function IconoCruz() {
   return (
@@ -49,7 +49,7 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
         </div>
         <div className="pc-rinde">
           <label htmlFor="pc-rinde">Rinde</label>
-          <input id="pc-rinde" type="number" inputMode="decimal" step="any" min="1" value={receta.rinde} onChange={(e) => acciones.cambiarReceta('rinde', e.target.value)} />
+          <EntradaNumero id="pc-rinde" valor={receta.rinde} onCambio={(v) => acciones.cambiarReceta('rinde', v)} />
           <span>unidades por tanda</span>
         </div>
         <div className="pc-venta">
@@ -73,7 +73,7 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
           {eligiendoOtra && (
             <div className="pc-fila-pregunta">
               <label htmlFor="pc-paquete" className="solo-lectores">Unidades por paquete</label>
-              <input id="pc-paquete" type="number" inputMode="numeric" step="1" min="1" value={receta.paquete ?? '1'} onChange={(e) => acciones.cambiarReceta('paquete', e.target.value)} />
+              <EntradaNumero id="pc-paquete" inputMode="numeric" valor={receta.paquete ?? '1'} onCambio={(v) => acciones.cambiarReceta('paquete', v)} />
               <span>unidades por paquete</span>
             </div>
           )}
@@ -161,7 +161,7 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
           <div className="pc-pregunta">
             <label htmlFor="pc-horno">¿Cuántos minutos de horno o plancha lleva la tanda?</label>
             <div className="pc-fila-pregunta">
-              <input id="pc-horno" type="number" inputMode="decimal" step="any" min="0" value={receta.horno} onChange={(e) => acciones.cambiarReceta('horno', e.target.value)} />
+              <EntradaNumero id="pc-horno" valor={receta.horno} onCambio={(v) => acciones.cambiarReceta('horno', v)} />
               <span>minutos</span>
             </div>
             <p className="pc-impacto">{cantidad(receta.horno)} min × {dinero1(num(negocio.costoMin))} por minuto = {dinero(r.G)}{porUnidad(r.G)}</p>
@@ -181,7 +181,7 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
             <label htmlFor="pc-minutos">¿Cuántos minutos te lleva hacer la tanda?</label>
             <p className="pc-chico">Contá preparar, cocinar, armar y limpiar.</p>
             <div className="pc-fila-pregunta">
-              <input id="pc-minutos" type="number" inputMode="decimal" step="any" min="0" value={receta.minutos} onChange={(e) => acciones.cambiarReceta('minutos', e.target.value)} />
+              <EntradaNumero id="pc-minutos" valor={receta.minutos} onCambio={(v) => acciones.cambiarReceta('minutos', v)} />
               <span>minutos</span>
             </div>
             <p className="pc-impacto">{cantidad(receta.minutos)} min a {dinero(num(negocio.valorHora))} la hora = {dinero(r.L)}{porUnidad(r.L)}</p>
@@ -201,7 +201,7 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
             <label htmlFor="pc-caja">{porPaquete ? '¿Cuánto gastás en envoltorio o bolsita por cada unidad?' : '¿Cuánto gastás en caja, bolsa o envío por unidad?'}</label>
             <div className="pc-fila-pregunta">
               <span>$</span>
-              <input id="pc-caja" type="number" inputMode="decimal" step="any" min="0" value={receta.packaging} onChange={(e) => acciones.cambiarReceta('packaging', e.target.value)} />
+              <EntradaNumero id="pc-caja" valor={receta.packaging} onCambio={(v) => acciones.cambiarReceta('packaging', v)} />
             </div>
             {porPaquete && <p className="pc-chico">Si no va envuelta cada una, dejalo en 0.</p>}
           </div>
@@ -211,7 +211,7 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
               <label htmlFor="pc-caja-paquete">¿Cuánto cuesta la caja o bolsa de la {venta}?</label>
               <div className="pc-fila-pregunta">
                 <span>$</span>
-                <input id="pc-caja-paquete" type="number" inputMode="decimal" step="any" min="0" value={receta.cajaPaquete ?? '0'} onChange={(e) => acciones.cambiarReceta('cajaPaquete', e.target.value)} />
+                <EntradaNumero id="pc-caja-paquete" valor={receta.cajaPaquete ?? '0'} onCambio={(v) => acciones.cambiarReceta('cajaPaquete', v)} />
               </div>
             </div>
           )}
@@ -237,7 +237,7 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
       <section className="pc-seccion">
         <h2>Tu ganancia</h2>
         <div className="pc-grilla2">
-          <CampoNumero id="pc-ganancia" etiqueta="Ganancia que querés (%)" valor={receta.ganancia} onCambio={(v) => acciones.cambiarReceta('ganancia', v)} />
+          <CampoNumero id="pc-ganancia" etiqueta="Ganancia que querés (%)" valor={receta.ganancia} invalido={r.invalido} describedBy={r.invalido ? 'pc-error-margen' : undefined} onCambio={(v) => acciones.cambiarReceta('ganancia', v)} />
         </div>
         <label className="pc-interruptor">
           <input type="checkbox" role="switch" checked={impuestos} onChange={(e) => acciones.cambiarReceta('conImpuestos', e.target.checked ? 'si' : 'no')} />
@@ -246,10 +246,17 @@ export default function EditorReceta({ receta, estado, insumosPorId, usosPorInsu
         {impuestos && (
           <>
             <div className="pc-grilla2">
-              <CampoNumero id="pc-impuestos" etiqueta="Impuestos y comisiones (%)" valor={receta.impuestos} onCambio={(v) => acciones.cambiarReceta('impuestos', v)} />
+              <CampoNumero id="pc-impuestos" etiqueta="Impuestos y comisiones (%)" valor={receta.impuestos} invalido={r.invalido} describedBy={r.invalido ? 'pc-error-margen' : undefined} onCambio={(v) => acciones.cambiarReceta('impuestos', v)} />
             </div>
             <p className="pc-chico">Si vendés por una app de delivery, sumá su comisión acá.</p>
           </>
+        )}
+        {r.invalido && (
+          <p id="pc-error-margen" className="pc-error-campo">
+            {impuestos
+              ? `La ganancia más los impuestos tienen que sumar menos de 95 %. Hoy suman ${(num(receta.ganancia) + num(receta.impuestos)).toLocaleString('es-AR')} %.`
+              : `La ganancia tiene que ser menor a 95 %. Hoy es ${num(receta.ganancia).toLocaleString('es-AR')} %.`}
+          </p>
         )}
       </section>
 

@@ -4,7 +4,8 @@
    resultado en un bloque carbón donde mandan los números.
    ========================================================================== */
 .pc-app { width: 100%; }
-.pc-cargando { padding: 32px 0; color: var(--carbon-suave); }
+/* Reserva el alto de la calculadora mientras carga, para que la página no salte (CLS). */
+.pc-cargando { padding: 32px 0; min-height: 100vh; color: var(--carbon-suave); }
 
 /* ---------- Pestañas: control segmentado ---------- */
 .pc-pestanas {
@@ -65,7 +66,7 @@
 .pc-app input:focus-visible,
 .pc-app select:focus-visible { outline: none; border-color: var(--carbon); box-shadow: 0 0 0 3px var(--piedra); }
 .pc-app input:user-invalid { border-color: var(--pimenton-oscuro); background: var(--pimenton-claro); }
-.pc-app input[type="text"] { font: 600 16px var(--texto); }
+.pc-app input[type="text"]:not([inputmode]) { font: 600 16px var(--texto); }
 .pc-app input::placeholder { color: var(--borde); font-weight: 400; }
 .pc-app select {
   appearance: none;
@@ -271,3 +272,8 @@
     top: 76px;
   }
 }
+
+/* Error junto al campo que lo causa (ganancia + impuestos de 95 % o más). */
+.pc-app input[aria-invalid="true"] { border-color: var(--pimenton); box-shadow: 0 0 0 1px var(--pimenton); }
+.pc-error-campo { margin: 10px 0 0; padding: 10px 12px; border-left: 4px solid var(--pimenton); background: var(--pimenton-claro); color: var(--pimenton-oscuro); font-size: 0.92rem; font-weight: 700; border-radius: 0 var(--radio) var(--radio) 0; }
+.pc-app input[aria-invalid="true"]:focus-visible { border-color: var(--pimenton); box-shadow: 0 0 0 3px var(--pimenton-claro); }

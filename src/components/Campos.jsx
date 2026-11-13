@@ -1,19 +1,43 @@
 import { useState } from 'react';
 import { num } from '../lib/calculo.js';
+import { leerNumero, mostrarNumero, limpiarEscritura } from '../lib/numeros.js';
 
-export function CampoNumero({ id, etiqueta, valor, onCambio, min = '0', ancho }) {
+// Campo para números escritos como en Argentina ("1.800", "1,5").
+// Es de texto (no type="number") para que el navegador no cambie ni descarte lo que se escribe,
+// pero abre el teclado numérico en el celular. Guarda el número en formato interno ("1800", "1.5").
+export function EntradaNumero({ valor, onCambio, inputMode = 'decimal', invalido = false, describedBy, ...resto }) {
+  const [texto, setTexto] = useState(null); // null: no se está escribiendo, se muestra con formato
+  return (
+    <input
+      {...resto}
+      type="text"
+      inputMode={inputMode}
+      autoComplete="off"
+      value={texto ?? mostrarNumero(valor)}
+      aria-invalid={invalido || undefined}
+      aria-describedby={describedBy}
+      onFocus={() => setTexto(mostrarNumero(valor))}
+      onChange={(e) => {
+        const escrito = limpiarEscritura(e.target.value);
+        setTexto(escrito);
+        onCambio(leerNumero(escrito));
+      }}
+      onBlur={() => setTexto(null)}
+    />
+  );
+}
+
+export function CampoNumero({ id, etiqueta, valor, onCambio, ancho, invalido, describedBy }) {
   return (
     <div className="pc-campo">
       <label htmlFor={id}>{etiqueta}</label>
-      <input
+      <EntradaNumero
         id={id}
-        type="number"
-        inputMode="decimal"
-        step="any"
-        min={min}
-        value={valor ?? ''}
+        valor={valor}
+        onCambio={onCambio}
+        invalido={invalido}
+        describedBy={describedBy}
         style={ancho ? { width: ancho } : undefined}
-        onChange={(e) => onCambio(e.target.value)}
       />
     </div>
   );
